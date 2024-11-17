@@ -766,6 +766,9 @@ window.addEventListener('beforeunload', () => {
         </table>
         <button onclick="aggiungiAbilità()">Aggiungi Abilità</button>
         <button id="saveBackupButton">Salva Dati</button>
+        <!-- Pulsante per caricare il backup -->
+<input type="file" id="fileInput" accept=".json" />
+<button id="loadBackupButton">Carica Backup</button>
     </div>
 
     <!-- Sezione per l'equipaggiamento -->
@@ -798,6 +801,46 @@ window.addEventListener('beforeunload', () => {
     </div>
 </div>
 
+
+     <script>
+        // Funzione per caricare i dati dal file JSON
+        function loadBackupData(event) {
+            const file = event.target.files[0];  // Ottieni il file selezionato dall'utente
+
+            if (file) {
+                const reader = new FileReader();  // Crea un oggetto FileReader per leggere il file
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);  // Parsea il contenuto del file JSON
+                        // Ripristina i dati in localStorage
+                        for (const key in data.localStorageData) {
+                            if (data.localStorageData.hasOwnProperty(key)) {
+                                localStorage.setItem(key, data.localStorageData[key]);
+                            }
+                        }
+                        alert('Dati ripristinati dal backup!');
+                    } catch (error) {
+                        alert('Errore nel caricare il file di backup. Assicurati che sia un file JSON valido.');
+                        console.error('Errore nel parsing del JSON:', error);
+                    }
+                };
+                reader.readAsText(file);  // Leggi il file come testo
+            }
+        }
+
+        // Aggiungi un listener per il campo di input del file
+        document.getElementById('fileInput').addEventListener('change', loadBackupData);
+
+        // (Opzionale) Se vuoi caricare il backup quando l'utente clicca sul pulsante "Carica Backup"
+        document.getElementById('loadBackupButton').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length > 0) {
+                loadBackupData({ target: fileInput });  // Chiama la funzione per caricare il file
+            } else {
+                alert('Seleziona un file di backup prima di caricare.');
+            }
+        });
+    </script>
 <script>
         // Funzione per scaricare i dati in un file JSON
         function downloadBackup() {
