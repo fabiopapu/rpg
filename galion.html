@@ -765,6 +765,7 @@ window.addEventListener('beforeunload', () => {
             </tbody>
         </table>
         <button onclick="aggiungiAbilità()">Aggiungi Abilità</button>
+        <button id="saveBackupButton">Salva Dati</button>
     </div>
 
     <!-- Sezione per l'equipaggiamento -->
@@ -797,6 +798,55 @@ window.addEventListener('beforeunload', () => {
     </div>
 </div>
 
+<script>
+        // Funzione per scaricare i dati in un file JSON
+        function downloadBackup() {
+            const backupData = {
+                // Prendi tutti i dati memorizzati in localStorage
+                localStorageData: { ...localStorage } 
+            };
+
+            // Converti i dati in formato JSON
+            const jsonData = JSON.stringify(backupData, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backup_dati.json';  // Nome del file JSON
+            a.click();
+            URL.revokeObjectURL(url); // Libera la memoria
+        }
+
+        // Aggiungi l'evento per il pulsante di salvataggio dei dati
+        document.getElementById('saveBackupButton').addEventListener('click', function() {
+            downloadBackup();
+            alert("Backup dei dati salvato con successo!");
+        });
+
+        // (Opzionale) Funzione per caricare i dati dal file JSON
+        function loadBackupData(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = JSON.parse(e.target.result); // Leggi i dati dal file
+                // Ripristina i dati in localStorage
+                for (const key in data.localStorageData) {
+                    localStorage.setItem(key, data.localStorageData[key]);
+                }
+                alert('Dati ripristinati!');
+            };
+            reader.readAsText(file);
+        }
+
+        // (Opzionale) Aggiungi un campo per caricare il backup
+        const uploadInput = document.createElement('input');
+        uploadInput.type = 'file';
+        uploadInput.accept = '.json';
+        uploadInput.addEventListener('change', loadBackupData);
+        document.body.appendChild(uploadInput);
+    </script>
+
+    
 <script>
     // Funzione per aggiungere una nuova abilità
     function aggiungiAbilità() {
