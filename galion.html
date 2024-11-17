@@ -797,6 +797,7 @@ window.addEventListener('beforeunload', () => {
     </div>
 </div>
 
+
 <script>
     // Funzione per aggiungere una nuova abilità
     function aggiungiAbilità() {
@@ -977,6 +978,189 @@ window.addEventListener('beforeunload', () => {
         salvaDatiEquipaggiamento();
     };
 </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal con Pulsante</title>
+    <style>
+        /* Stili per la modale */
+        .modal {
+            display: none; /* La modale è nascosta di default */
+            position: fixed;
+            z-index: 1; /* Si sovrappone al contenuto */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); /* Sfondo semi-trasparente */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        /* Pulsante per chiudere la modale */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <style>
+        /* Stile per la finestra laterale */
+        #finestraLaterale {
+          height: 100%;
+          width: 50%; /* Finestra laterale occupa metà della pagina */
+          position: fixed;
+          top: 0;
+          right: 0;
+          background-color: #f1f1f1;
+          overflow-x: hidden;
+          transition: 0.3s;
+          padding-top: 60px;
+          box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+        }
+      
+        #finestraLaterale textarea {
+          width: 90%;
+          height: 80%;
+          margin: 10px;
+          padding: 10px;
+          font-size: 16px;
+        }
+      
+        /* Bottone per chiudere la finestra */
+        #closeBtn {
+          position: absolute;
+          top: 10px;
+          right: 25px;
+          font-size: 24px;
+          cursor: pointer;
+        }
+      </style>
+      
+      <div id="finestraLaterale">
+        <span id="closeBtn" onclick="chiudiFinestra()">&times;</span>
+        <textarea id="testoArea" placeholder="Scrivi qui..."></textarea>
+      </div>
+      
+      <button onclick="apriFinestra()">Apri Finestra Laterale</button>
+      
+      <script>
+        // Apre la finestra laterale
+        function apriFinestra() {
+          document.getElementById("finestraLaterale").style.width = "50%";
+        }
+      
+        // Chiude la finestra laterale
+        function chiudiFinestra() {
+          document.getElementById("finestraLaterale").style.width = "0";
+        }
+      
+        // Salva il contenuto della finestra laterale nel localStorage
+        document.getElementById("testoArea").addEventListener("input", function() {
+          localStorage.setItem("contenutoFinestra", this.value);
+        });
+      
+        // Carica il contenuto salvato nel localStorage quando la pagina viene caricata
+        window.onload = function() {
+          const contenutoSalvato = localStorage.getItem("contenutoFinestra");
+          if (contenutoSalvato) {
+            document.getElementById("testoArea").value = contenutoSalvato;
+          }
+        };
+      </script>
+      
+      
+
+<script>
+    function backupDati() {
+      const dati = {};
+      const elementi = document.querySelectorAll("input, textarea, select");
+  
+      elementi.forEach(elemento => {
+        dati[elemento.id || elemento.name] = elemento.value;
+      });
+  
+      // Richiedi all'utente il nome del file, senza permettere di cambiare l'estensione
+      let nomeFile = prompt("Inserisci il nome del file (verrà salvato come .json):", "backup");
+      if (!nomeFile) return;
+  
+      // Imposta il nome finale con l'estensione .json
+      nomeFile = nomeFile + ".json";
+  
+      // Crea e scarica il file JSON
+      const blob = new Blob([JSON.stringify(dati, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = nomeFile;
+      link.click();
+    }
+  
+    let fileSelezionato;
+  
+    function selezionaFile(event) {
+      fileSelezionato = event.target.files[0];
+    }
+  
+    function caricaDati() {
+      if (!fileSelezionato) {
+        alert("Seleziona un file JSON prima di caricare.");
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const dati = JSON.parse(e.target.result);
+          Object.keys(dati).forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+              elemento.value = dati[id];
+            } else {
+              console.warn(`Campo non trovato: ${id}`);
+            }
+          });
+        } catch (error) {
+          alert("Errore durante il caricamento del file. Assicurati che sia un file JSON valido.");
+          console.error("Errore di parsing JSON:", error);
+        }
+      };
+      reader.readAsText(fileSelezionato);
+    }
+  </script>
+  
+  <!-- Pulsanti per il backup e il caricamento -->
+  <button onclick="backupDati()">Salva Backup</button>
+  <input type="file" accept=".json" onchange="selezionaFile(event)" />
+  <button onclick="caricaDati()">Carica Backup</button>
+  
+  
+    
+    
+
 
 </body>
 </html>
