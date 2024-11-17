@@ -1031,7 +1031,7 @@ window.addEventListener('beforeunload', () => {
         /* Stile per la finestra laterale */
         #finestraLaterale {
           height: 100%;
-          width: 50%; /* Finestra laterale occupa metà della pagina */
+          width: 0;
           position: fixed;
           top: 0;
           right: 0;
@@ -1062,36 +1062,20 @@ window.addEventListener('beforeunload', () => {
       
       <div id="finestraLaterale">
         <span id="closeBtn" onclick="chiudiFinestra()">&times;</span>
-        <textarea id="testoArea" placeholder="Scrivi qui..."></textarea>
+        <textarea placeholder="Scrivi qui..."></textarea>
       </div>
       
       <button onclick="apriFinestra()">Apri Finestra Laterale</button>
       
       <script>
-        // Apre la finestra laterale
         function apriFinestra() {
-          document.getElementById("finestraLaterale").style.width = "50%";
+          document.getElementById("finestraLaterale").style.width = "300px";
         }
       
-        // Chiude la finestra laterale
         function chiudiFinestra() {
           document.getElementById("finestraLaterale").style.width = "0";
         }
-      
-        // Salva il contenuto della finestra laterale nel localStorage
-        document.getElementById("testoArea").addEventListener("input", function() {
-          localStorage.setItem("contenutoFinestra", this.value);
-        });
-      
-        // Carica il contenuto salvato nel localStorage quando la pagina viene caricata
-        window.onload = function() {
-          const contenutoSalvato = localStorage.getItem("contenutoFinestra");
-          if (contenutoSalvato) {
-            document.getElementById("testoArea").value = contenutoSalvato;
-          }
-        };
       </script>
-      
       
 
 <script>
@@ -1164,3 +1148,13 @@ window.addEventListener('beforeunload', () => {
 
 </body>
 </html>
+
+
+
+
+
+ 
+
+
+
+
