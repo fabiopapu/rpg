@@ -1,0 +1,958 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modulo Personaggio GDR</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .section { margin-bottom: 20px; }
+        label { display: inline-block; width: 150px; }
+        input[type="number"], input[type="text"] { width: 100px; }
+        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+
+        .equipaggiamento-section {
+            width: 40%;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+
+        .main-section {
+            width: 55%;
+            margin-left: 10%;
+        }
+
+        .section input {
+            width: 150px;
+        }
+
+        .bonus { font-weight: bold; color: green; }
+    </style>
+</head>
+<body>
+
+<h1>SCHEDA PG</h1>
+
+
+<div class="equipaggiamento-section">
+
+<h1>Calcola Stato Ferita</h1>
+<div class="container">
+    <label for="indice_ferite">Indice Ferite:</label>
+    <input type="number" id="indice_ferite" min="1" max="10" onchange="aggiornaStatoFerita()">
+    <label for="danni">Danni:</label>
+    <input type="number" id="danni" min="0" onchange="aggiornaStatoFerita()">
+    
+    <br>
+    <label for="stato_ferita">Stato della Ferita:</label>
+    <span id="stato_ferita"></span>
+</div>
+<div>
+   <label for="armatura">Armatura:</label>
+<input type="text" id="armatura" name="armatura" value="">
+</div>
+<script>
+    function aggiornaStatoFerita() {
+        let indice = parseInt(document.getElementById("indice_ferite").value);
+        let danni = parseInt(document.getElementById("danni").value);
+        let statoFerita = "";
+        
+        // Calcolo il range di danni per ogni stato in base all'indice
+        let intervallo = indice;  // L'indice determina l'intervallo per il cambiamento di stato
+        
+        // Calcolo gli intervalli per ogni stato in base all'indice
+        let lieveMax = intervallo;
+        let mediaMax = lieveMax * 2;
+        let laceranteMax = lieveMax * 3;
+        let profondaMax = lieveMax * 4;
+        let criticaMax = lieveMax * 5;
+        let graveMax = Infinity;  // Ferita grave non ha un limite superiore fisso
+        
+        // Determino lo stato in base ai danni e all'indice
+        if (danni <= lieveMax) statoFerita = "Lieve";
+        else if (danni <= mediaMax) statoFerita = "Media";
+        else if (danni <= laceranteMax) statoFerita = "Lacerante";
+        else if (danni <= profondaMax) statoFerita = "Profonda";
+        else if (danni <= criticaMax) statoFerita = "Critica";
+        else statoFerita = "Grave";
+        
+        // Visualizza lo stato della ferita
+        document.getElementById("stato_ferita").innerText = statoFerita;
+    }
+</script>
+
+<h1>Calcola Stato Stanchezza</h1>
+
+<div class="container">
+    <label for="indice_stanchezza">Indice Stanchezza:</label>
+    <input type="number" id="indice_stanchezza" min="1" max="10" onchange="aggiornaStatoStanchezza()">
+    
+    <label for="danni_stanchezza">Danni (Stanchezza):</label>
+    <input type="number" id="danni_stanchezza" min="0" onchange="aggiornaStatoStanchezza()">
+    
+    <br>
+    <label for="stato_stanchezza">Stato della Stanchezza:</label>
+    <span id="stato_stanchezza"></span>
+</div>
+
+<script>
+    function aggiornaStatoStanchezza() {
+        let indice = parseInt(document.getElementById("indice_stanchezza").value);
+        let danni = parseInt(document.getElementById("danni_stanchezza").value);
+        let statoStanchezza = "";
+        
+        // Calcolo l'intervallo di danni per ogni stato in base all'indice
+        let intervallo = indice;  // L'indice determina l'intervallo per il cambiamento di stato
+        
+        // Calcolo gli intervalli per ogni stato in base all'indice
+        let riposatoMax = intervallo;
+        let frescoMax = riposatoMax * 2;
+        let affaticatoMax = riposatoMax * 3;
+        let stancoMax = riposatoMax * 4;
+        let strematoMax = Infinity;  // Stanchezza stremato non ha un limite superiore fisso
+        
+        // Determino lo stato in base ai danni e all'indice
+        if (danni <= riposatoMax) statoStanchezza = "Riposato";
+        else if (danni <= frescoMax) statoStanchezza = "Fresco";
+        else if (danni <= affaticatoMax) statoStanchezza = "Affaticato";
+        else if (danni <= stancoMax) statoStanchezza = "Stanco";
+        else statoStanchezza = "Stremato";
+        
+        // Visualizza lo stato della stanchezza
+        document.getElementById("stato_stanchezza").innerText = statoStanchezza;
+    }
+</script>
+
+<h1>Calcola Stato Paura</h1>
+
+<div class="container">
+    <label for="indice_paura">Indice Paura :</label>
+    <input type="number" id="indice_paura" min="1" max="10" onchange="aggiornaStatoPaura()">
+    
+    <label for="danni_paura">Danni (Paura):</label>
+    <input type="number" id="danni_paura" min="0" onchange="aggiornaStatoPaura()">
+    
+    <br>
+    <label for="stato_paura">Stato della Paura:</label>
+    <span id="stato_paura"></span>
+</div>
+
+<script>
+    function aggiornaStatoPaura() {
+        let indice = parseInt(document.getElementById("indice_paura").value);
+        let danni = parseInt(document.getElementById("danni_paura").value);
+        let statoPaura = "";
+        
+        // Calcolo l'intervallo di danni per ogni stato in base all'indice
+        let intervallo = indice;  // L'indice determina l'intervallo per il cambiamento di stato
+        
+        // Calcolo gli intervalli per ogni stato in base all'indice
+        let quietoMax = intervallo;
+        let tesoMax = quietoMax * 2;
+        let intimoritoMax = quietoMax * 3;
+        let spaventatoMax = quietoMax * 4;
+        let panicoMax = Infinity;  // Paura in panico non ha un limite superiore fisso
+        
+        // Determino lo stato in base ai danni e all'indice
+        if (danni <= quietoMax) statoPaura = "Quieto";
+        else if (danni <= tesoMax) statoPaura = "Teso";
+        else if (danni <= intimoritoMax) statoPaura = "Intimorito";
+        else if (danni <= spaventatoMax) statoPaura = "Spaventato";
+        else statoPaura = "Panico";
+        
+        // Visualizza lo stato della paura
+        document.getElementById("stato_paura").innerText = statoPaura;
+    }
+</script>
+
+ <!-- Sezione Armi e Scudo -->
+
+ <h2>Armi e Scudo</h2>
+    <label for="arma1">Arma 1:</label> <input type="text" id="arma1"><br>
+    <label for="danno1">Danno Arma 1:</label> <input type="text" id="danno1"><br>
+    
+    <label for="arma2">Arma 2:</label> <input type="text" id="arma2"><br>
+    <label for="danno2">Danno Arma 2:</label> <input type="text" id="danno2"><br>
+    
+    <label for="scudo">Scudo:</label> <input type="text" id="scudo"><br>
+    <label for="danno_scudo">Danno Scudo:</label> <input type="text" id="danno_scudo"><br>
+
+    <title>MS-MI</title> <br>
+    
+    <div class="container">
+        <h2>  MS-MI</h2> <br>
+        <label for="inputValue"></label>
+        <input type="number" id="inputValue" placeholder="Es. -3, 0, 2, 8" />
+        <button onclick="calcolaMS()">Calcola</button>
+        <p id="result" class="result"></p>
+    </div>
+
+    <script>
+        function calcolaMS() {
+            var inputValue = parseInt(document.getElementById('inputValue').value);
+            var risultato = '';
+            var dadi = '';
+            var ms = 0;
+
+            if (isNaN(inputValue)) {
+                risultato = 'Inserisci un numero valido.';
+                dadi = '';
+            } else {
+                if (inputValue <= 5) {
+                    // Margine di Successo
+                    ms = 5 - inputValue;
+                    risultato = `Margine di Successo: ${ms}`;
+                } else {
+                    // Margine di Insuccesso
+                    ms = inputValue - 5;
+                    risultato = `Margine di Insuccesso: ${ms}`;
+                }
+
+                // Determina il numero di dadi da tirare in base al margine
+                if (ms <= 2) {
+                    dadi = 'Tira 1D10';
+                } else if (ms <= 4) {
+                    dadi = 'Tira 2D10';
+                } else if (ms <= 6) {
+                    dadi = 'Tira 3D10';
+                } else if (ms <= 8) {
+                    dadi = 'Tira 4D10';
+                } else if (ms <= 10) {
+                    dadi = 'Tira 5D10';
+                } else if (ms <= 12) {
+                    dadi = 'Tira 6D10';
+                } else {
+                    dadi = 'Tira 6D10 o più';
+                }
+            }
+
+            document.getElementById('result').innerText = `${risultato}\n${dadi}`;
+        }
+    </script>
+
+   
+</div>
+
+
+
+
+<!-- Sezione Principale -->
+<div class="main-section">
+    <h2>Informazioni Personaggio</h2>
+    <label for="nome">Nome:</label> <input type="text" id="nome"><br>
+    <label for="livello">Livello:</label> <input type="number" id="livello"><br>
+    <label for="pe">Punti Esperienza:</label> <input type="number" id="pe"><br>
+    <label for="razza">Razza:</label> <input type="text" id="razza"><br>
+    <label for="classe">Classe:</label> <input type="text" id="classe"><br>
+    <label for="eta">Età:</label> <input type="number" id="eta"><br>
+    <label for="fortuna">Punti Fortuna:</label> <input type="number" id="fortuna"><br><br>
+
+
+    <h2>Caratteristiche e Bonus</h2>
+    <label for="possensa">Possenza:</label> <input type="number" id="possensa" onchange="calcolaBonus('possensa')">
+    <span id="possensa_bonus" class="bonus"></span><br>
+    
+    <label for="resistenza">Resistenza:</label> <input type="number" id="resistenza" onchange="calcolaBonus('resistenza')">
+    <span id="resistenza_bonus" class="bonus"></span><br>
+    
+    <label for="atletica">Atletica:</label> <input type="number" id="atletica" onchange="calcolaBonus('atletica')">
+    <span id="atletica_bonus" class="bonus"></span><br>
+    
+    <label for="manualita">Manualità:</label> <input type="number" id="manualita" onchange="calcolaBonus('manualita')">
+    <span id="manualita_bonus" class="bonus"></span><br>
+    
+    <label for="percezione">Percezione:</label> <input type="number" id="percezione" onchange="calcolaBonus('percezione')">
+    <span id="percezione_bonus" class="bonus"></span><br>
+    
+    <label for="sapienza">Sapienza:</label> <input type="number" id="sapienza" onchange="calcolaBonus('sapienza')">
+    <span id="sapienza_bonus" class="bonus"></span><br>
+    
+    <label for="carisma">Carisma:</label> <input type="number" id="carisma" onchange="calcolaBonus('carisma')">
+    <span id="carisma_bonus" class="bonus"></span><br><br>
+
+   
+
+
+<!-- Sezione Monete -->
+<div class="sezione-monete">
+    <h3>Monete</h3>
+    <label for="monete_oro">Monete d'oro:</label>
+    <input type="number" id="monete_oro" name="monete_oro" value="0" />
+    <br />
+    <label for="monete_argento">Monete d'argento:</label>
+    <input type="number" id="monete_argento" name="monete_argento" value="0" />
+    <br />
+    <label for="monete_rame">Monete di rame:</label>
+    <input type="number" id="monete_rame" name="monete_rame" value="0" />
+   <br>
+</div>
+
+
+
+<script>
+    // Funzione per calcolare i bonus in base ai valori
+    function calcolaBonus(caratteristica) {
+        let valore = parseInt(document.getElementById(caratteristica).value);
+        
+        // Limita il valore tra 5 e 15
+        if (valore < 5) valore = 5;
+        if (valore > 15) valore = 15;
+
+        // Calcolo bonus secondo i parametri forniti per ciascuna caratteristica
+        let bonus = 0;
+        if (valore === 5) bonus = 0;
+        else if (valore === 6 || valore === 7) bonus = -1;
+        else if (valore === 8 || valore === 9) bonus = -2;
+        else if (valore === 10) bonus = -3;
+        else if (valore === 11) bonus = -4;
+        else if (valore === 12) bonus = -5;
+        else if (valore === 13) bonus = -6;
+        else if (valore === 14) bonus = -7;
+        else if (valore === 15) bonus = -8;
+
+        // Visualizzazione dei bonus
+        document.getElementById(caratteristica + "_bonus").innerText = "Bonus: " + bonus;
+
+        // Aggiornamento dei valori nel campo
+        document.getElementById(caratteristica).value = valore;
+
+       
+
+    // Funzione per aggiungere oggetti in equipaggiamento
+    function aggiungiOggetto() {
+        let table = document.getElementById("equipaggiamento_table").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow(table.rows.length);
+        newRow.innerHTML = `
+
+            <td><input type="text" class="oggetto_tipo"></td>
+            <td><input type="number" class="oggetto_ingombro" onchange="calcolaTotali()"></td>
+            <td><input type="number" class="oggetto_peso" onchange="calcolaTotali()"></td>
+        `;
+    }
+
+    // Funzione per calcolare il totale ingombro e peso
+    function calcolaTotali() {
+        let ingombro = 0;
+        let peso = 0;
+        let ingombroInputs = document.querySelectorAll('.oggetto_ingombro');
+        let pesoInputs = document.querySelectorAll('.oggetto_peso');
+        
+        ingombroInputs.forEach(input => ingombro += parseFloat(input.value) || 0);
+        pesoInputs.forEach(input => peso += parseFloat(input.value) || 0);
+        
+        document.getElementById('totale_ingombro').value = ingombro.toFixed(2);
+        document.getElementById('totale_peso').value = peso.toFixed(2);
+    }
+</script>
+
+<script>
+// Funzione per salvare i dati in localStorage
+function salvaDati() {
+    // Prendiamo tutti gli input della pagina
+    const inputs = document.querySelectorAll('input');
+    
+    inputs.forEach(input => {
+        if (input.id) { // Salviamo solo gli input che hanno un ID
+            localStorage.setItem(input.id, input.value);
+        }
+    });
+
+    // Salviamo i dati di equipaggiamento se presenti
+    const oggetti = document.querySelectorAll('.oggetto_tipo');
+    oggetti.forEach((oggetto, index) => {
+        localStorage.setItem(`oggetto_tipo_${index}`, oggetto.value);
+        localStorage.setItem(`oggetto_ingombro_${index}`, document.querySelectorAll('.oggetto_ingombro')[index].value);
+        localStorage.setItem(`oggetto_peso_${index}`, document.querySelectorAll('.oggetto_peso')[index].value);
+    });
+
+    // Salvataggio monete
+    const monete = ['monete_oro', 'monete_argento', 'monete_rame'];
+    monete.forEach(m => {
+        const valore = document.getElementById(m).value;
+        localStorage.setItem(m, valore);
+    });
+}
+
+// Funzione per caricare i dati salvati da localStorage
+function caricaDati() {
+    // Carichiamo i dati generali (nome, livello, etc.)
+    const inputs = document.querySelectorAll('input');
+    
+    inputs.forEach(input => {
+        if (input.id) {
+            const valoreSalvato = localStorage.getItem(input.id);
+            if (valoreSalvato !== null) {
+                input.value = valoreSalvato;
+            }
+        }
+    });
+
+    // Carica gli oggetti di equipaggiamento
+    let index = 0;
+    while (localStorage.getItem(`oggetto_tipo_${index}`)) {
+        let table = document.getElementById("equipaggiamento_table").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow(table.rows.length);
+        newRow.innerHTML = `
+            <td><input type="text" class="oggetto_tipo" value="${localStorage.getItem(`oggetto_tipo_${index}`)}"></td>
+            <td><input type="number" class="oggetto_ingombro" value="${localStorage.getItem(`oggetto_ingombro_${index}`)}" onchange="calcolaTotali()"></td>
+            <td><input type="number" class="oggetto_peso" value="${localStorage.getItem(`oggetto_peso_${index}`)}" onchange="calcolaTotali()"></td>
+        `;
+        index++;
+    }
+
+    // Carica i dati delle monete
+    const monete = ['monete_oro', 'monete_argento', 'monete_rame'];
+    monete.forEach(m => {
+        const valoreSalvato = localStorage.getItem(m);
+        if (valoreSalvato !== null) {
+            document.getElementById(m).value = valoreSalvato;
+        }
+    });
+
+    // Ricalcoliamo i bonus dopo aver caricato i valori
+    aggiornaBonus();
+}
+
+// Funzione per calcolare i bonus (modifica questa funzione se necessario)
+function aggiornaBonus() {
+    // Caratteristiche da calcolare (adatta alla tua struttura)
+    const caratteristiche = [
+        'possensa', 'resistenza', 'atletica', 'manualita', 'percezione', 'sapienza', 'carisma'
+    ];
+    
+    caratteristiche.forEach(caratteristica => {
+        const valore = parseInt(document.getElementById(caratteristica).value);
+        let bonus = calcolaBonus(caratteristica, valore);
+        document.getElementById(caratteristica + "_bonus").innerText = "Bonus: " + bonus;
+    });
+}
+
+// Funzione per calcolare il bonus basato sul valore
+function calcolaBonus(caratteristica, valore) {
+    // Limita il valore tra 5 e 15
+    if (valore < 5) valore = 5;
+    if (valore > 15) valore = 15;
+
+    // Calcolo bonus secondo i parametri forniti per ciascuna caratteristica
+    let bonus = 0;
+    if (valore === 5) bonus = 0;
+    else if (valore === 6 || valore === 7) bonus = -1;
+    else if (valore === 8 || valore === 9) bonus = -2;
+    else if (valore === 10) bonus = -3;
+    else if (valore === 11) bonus = -4;
+    else if (valore === 12) bonus = -5;
+    else if (valore === 13) bonus = -6;
+    else if (valore === 14) bonus = -7;
+    else if (valore === 15) bonus = -8;
+
+    return bonus;
+}
+
+// Aggiungi evento per salvare i dati quando l'input cambia
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', salvaDati);
+});
+
+// Carica i dati salvati al caricamento della pagina
+window.addEventListener('load', caricaDati);
+
+// Al salvataggio dei dati, salviamo i dati della pagina (prima di ricaricare)
+window.addEventListener('beforeunload', () => {
+    salvaDati();
+});
+</script>
+
+</body>
+</html>
+
+<br><br>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal con Pulsante</title>
+    <style>
+        /* Stili per la modale */
+        .modal {
+            display: none; /* La modale è nascosta di default */
+            position: fixed;
+            z-index: 1; /* Si sovrappone al contenuto */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); /* Sfondo semi-trasparente */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        /* Pulsante per chiudere la modale */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <style>
+        /* Stile per la finestra laterale */
+        #finestraLaterale {
+          height: 100%;
+          width: 0;
+          position: fixed;
+          top: 0;
+          right: 0;
+          background-color: #f1f1f1;
+          overflow-x: hidden;
+          transition: 0.3s;
+          padding-top: 60px;
+          box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+        }
+      
+        #finestraLaterale textarea {
+          width: 90%;
+          height: 80%;
+          margin: 10px;
+          padding: 10px;
+          font-size: 16px;
+        }
+      
+        /* Bottone per chiudere la finestra */
+        #closeBtn {
+          position: absolute;
+          top: 10px;
+          right: 25px;
+          font-size: 24px;
+          cursor: pointer;
+        }
+      </style>
+      
+      <div id="finestraLaterale">
+        <span id="closeBtn" onclick="chiudiFinestra()">&times;</span>
+        <textarea placeholder="Scrivi qui..."></textarea>
+      </div>
+      
+      
+<script>
+    function backupDati() {
+      const dati = {};
+      const elementi = document.querySelectorAll("input, textarea, select");
+  
+      elementi.forEach(elemento => {
+        dati[elemento.id || elemento.name] = elemento.value;
+      });
+  
+      // Richiedi all'utente il nome del file, senza permettere di cambiare l'estensione
+      let nomeFile = prompt("Inserisci il nome del file (verrà salvato come .json):", "backup");
+      if (!nomeFile) return;
+  
+      // Imposta il nome finale con l'estensione .json
+      nomeFile = nomeFile + ".json";
+  
+      // Crea e scarica il file JSON
+      const blob = new Blob([JSON.stringify(dati, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = nomeFile;
+      link.click();
+    }
+  
+    let fileSelezionato;
+  
+    function selezionaFile(event) {
+      fileSelezionato = event.target.files[0];
+    }
+  
+    function caricaDati() {
+      if (!fileSelezionato) {
+        alert("Seleziona un file JSON prima di caricare.");
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const dati = JSON.parse(e.target.result);
+          Object.keys(dati).forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+              elemento.value = dati[id];
+            } else {
+              console.warn(`Campo non trovato: ${id}`);
+            }
+          });
+        } catch (error) {
+          alert("Errore durante il caricamento del file. Assicurati che sia un file JSON valido.");
+          console.error("Errore di parsing JSON:", error);
+        }
+      };
+      reader.readAsText(fileSelezionato);
+    }
+  </script>
+  
+  <!-- Pulsanti per il backup e il caricamento -->
+  <button onclick="backupDati()">Salva Backup</button>
+  <input type="file" accept=".json" onchange="selezionaFile(event)" />
+  <button onclick="caricaDati()">Carica Backup</button>
+  
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Abilità e Equipaggiamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .contenitore {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        table {
+            width: 48%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        td:first-child {
+            text-align: left;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .remove-btn {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Gestione Abilità e Equipaggiamento</h1>
+
+<div class="contenitore">
+    <!-- Sezione delle abilità -->
+    <div>
+        <h2>Abilità</h2>
+        <table id="tabella_abilità">
+            <thead>
+                <tr>
+                    <th>Abilità</th>
+                    <th>Neofita</th>
+                    <th>Pratico</th>
+                    <th>Esperto</th>
+                    <th>Veterano</th>
+                    <th>Maestro</th>
+                    <th>Punti Addestramento</th>
+                    <th>Rimuovi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Le righe saranno aggiunte dinamicamente -->
+            </tbody>
+        </table>
+        <button onclick="aggiungiAbilità()">Aggiungi Abilità</button>
+    </div>
+
+    <!-- Sezione dell'equipaggiamento -->
+    <div>
+        <h2>Equipaggiamento</h2>
+        <table id="tabella_equipaggiamento">
+            <thead>
+                <tr>
+                    <th>Oggetto</th>
+                    <th>Peso</th>
+                    <th>Ingombro</th>
+                    <th>Rimuovi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Le righe saranno aggiunte dinamicamente -->
+            </tbody>
+        </table>
+        <button onclick="aggiungiEquipaggiamento()">Aggiungi Oggetto</button>
+
+        <div>
+            <p><strong>Peso Totale: </strong><span id="pesoTotale">0</span></p>
+            <p><strong>Ingombro Totale: </strong><span id="ingombroTotale">0</span></p>
+        </div>
+    </div>
+</div>
+
+<div>
+    <button onclick="salvaBackup()">Salva Backup (JSON)</button>
+    <input type="file" id="caricaFile" onchange="caricaBackup(event)">
+</div>
+
+<script>
+    // Funzione per aggiungere una nuova abilità
+    function aggiungiAbilità() {
+        const tabella = document.getElementById("tabella_abilità").getElementsByTagName('tbody')[0];
+        const nuovaRiga = tabella.insertRow(tabella.rows.length);
+
+        nuovaRiga.innerHTML = `
+            <td><input type="text" placeholder="Nome abilità" class="abilità_nome"></td>
+            <td><input type="checkbox" class="neofita"></td>
+            <td><input type="checkbox" class="pratico"></td>
+            <td><input type="checkbox" class="esperto"></td>
+            <td><input type="checkbox" class="veterano"></td>
+            <td><input type="checkbox" class="maestro"></td>
+            <td><input type="number" class="punti_addestramento" value="0"></td>
+            <td><button class="remove-btn" onclick="rimuoviAbilità(this)">Rimuovi</button></td>
+        `;
+        salvaAbilita();
+    }
+
+    // Funzione per rimuovere un'abilità
+    function rimuoviAbilità(button) {
+        const row = button.closest('tr');
+        row.remove();
+        salvaAbilita();
+    }
+
+    // Funzione per salvare le abilità nel localStorage
+    function salvaAbilita() {
+        const datiAbilita = [];
+        const righe = document.querySelectorAll('#tabella_abilità tbody tr');
+        righe.forEach(row => {
+            const nome = row.querySelector('.abilità_nome').value;
+            const neofita = row.querySelector('.neofita').checked;
+            const pratico = row.querySelector('.pratico').checked;
+            const esperto = row.querySelector('.esperto').checked;
+            const veterano = row.querySelector('.veterano').checked;
+            const maestro = row.querySelector('.maestro').checked;
+            const puntiAddestramento = row.querySelector('.punti_addestramento').value;
+
+            datiAbilita.push({ nome, neofita, pratico, esperto, veterano, maestro, puntiAddestramento });
+        });
+
+        localStorage.setItem('abilita', JSON.stringify(datiAbilita));
+    }
+
+    // Funzione per caricare le abilità dal localStorage
+    function caricaAbilita() {
+        const datiAbilita = JSON.parse(localStorage.getItem('abilita')) || [];
+        const tabella = document.getElementById("tabella_abilità").getElementsByTagName('tbody')[0];
+        datiAbilita.forEach(abilita => {
+            const nuovaRiga = tabella.insertRow(tabella.rows.length);
+            nuovaRiga.innerHTML = `
+                <td><input type="text" value="${abilita.nome}" class="abilità_nome"></td>
+                <td><input type="checkbox" class="neofita" ${abilita.neofita ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="pratico" ${abilita.pratico ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="esperto" ${abilita.esperto ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="veterano" ${abilita.veterano ? 'checked' : ''}></td>
+                <td><input type="checkbox" class="maestro" ${abilita.maestro ? 'checked' : ''}></td>
+                <td><input type="number" class="punti_addestramento" value="${abilita.puntiAddestramento}"></td>
+                <td><button class="remove-btn" onclick="rimuoviAbilità(this)">Rimuovi</button></td>
+            `;
+        });
+    }
+
+    // Funzione per aggiungere un nuovo oggetto all'equipaggiamento
+    function aggiungiEquipaggiamento() {
+        const tabella = document.getElementById("tabella_equipaggiamento").getElementsByTagName('tbody')[0];
+        const nuovaRiga = tabella.insertRow(tabella.rows.length);
+
+        nuovaRiga.innerHTML = `
+            <td><input type="text" placeholder="Nome oggetto" class="oggetto_nome"></td>
+            <td><input type="number" class="peso" value="0" oninput="calcolaTotali()"></td>
+            <td><input type="number" class="ingombro" value="0" oninput="calcolaTotali()"></td>
+            <td><button class="remove-btn" onclick="rimuoviEquipaggiamento(this)">Rimuovi</button></td>
+        `;
+        salvaEquipaggiamento();
+    }
+
+    // Funzione per rimuovere un oggetto dall'equipaggiamento
+    function rimuoviEquipaggiamento(button) {
+        const row = button.closest('tr');
+        row.remove();
+        salvaEquipaggiamento();
+    }
+
+    // Funzione per salvare l'equipaggiamento nel localStorage
+    function salvaEquipaggiamento() {
+        const datiEquipaggiamento = [];
+        const righe = document.querySelectorAll('#tabella_equipaggiamento tbody tr');
+        righe.forEach(row => {
+            const oggetto = row.querySelector('.oggetto_nome').value;
+            const peso = row.querySelector('.peso').value;
+            const ingombro = row.querySelector('.ingombro').value;
+
+            datiEquipaggiamento.push({ oggetto, peso, ingombro });
+        });
+
+        localStorage.setItem('equipaggiamento', JSON.stringify(datiEquipaggiamento));
+        calcolaTotali();
+    }
+
+    // Funzione per caricare l'equipaggiamento dal localStorage
+    function caricaEquipaggiamento() {
+        const datiEquipaggiamento = JSON.parse(localStorage.getItem('equipaggiamento')) || [];
+        const tabella = document.getElementById("tabella_equipaggiamento").getElementsByTagName('tbody')[0];
+        datiEquipaggiamento.forEach(equip => {
+            const nuovaRiga = tabella.insertRow(tabella.rows.length);
+            nuovaRiga.innerHTML = `
+                <td><input type="text" value="${equip.oggetto}" class="oggetto_nome"></td>
+                <td><input type="number" class="peso" value="${equip.peso}" oninput="calcolaTotali()"></td>
+                <td><input type="number" class="ingombro" value="${equip.ingombro}" oninput="calcolaTotali()"></td>
+                <td><button class="remove-btn" onclick="rimuoviEquipaggiamento(this)">Rimuovi</button></td>
+            `;
+        });
+        calcolaTotali();
+    }
+
+    // Funzione per calcolare il peso totale e l'ingombro totale
+    function calcolaTotali() {
+        let pesoTotale = 0;
+        let ingombroTotale = 0;
+
+        const pesi = document.querySelectorAll('.peso');
+        const ingombri = document.querySelectorAll('.ingombro');
+
+        pesi.forEach(peso => pesoTotale += parseFloat(peso.value) || 0);
+        ingombri.forEach(ingombro => ingombroTotale += parseFloat(ingombro.value) || 0);
+
+        document.getElementById('pesoTotale').textContent = pesoTotale;
+        document.getElementById('ingombroTotale').textContent = ingombroTotale;
+    }
+
+    // Funzione per salvare tutto in un file JSON con nome personalizzato
+    function salvaBackup() {
+        const abilita = JSON.parse(localStorage.getItem('abilita')) || [];
+        const equipaggiamento = JSON.parse(localStorage.getItem('equipaggiamento')) || [];
+
+        const backup = {
+            abilita: abilita,
+            equipaggiamento: equipaggiamento
+        };
+
+        // Chiede il nome del file all'utente
+        const nomeFile = prompt("Inserisci il nome del file (senza estensione):", "Backup");
+        if (!nomeFile) {
+            alert("Nome file non valido");
+            return;
+        }
+
+        const fileName = nomeFile.endsWith(".json") ? nomeFile : nomeFile + ".json";
+
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Funzione per caricare il backup da un file JSON
+    function caricaBackup(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+
+                // Verifica la struttura del file
+                if (data && Array.isArray(data.abilita) && Array.isArray(data.equipaggiamento)) {
+                    localStorage.setItem('abilita', JSON.stringify(data.abilita));
+                    localStorage.setItem('equipaggiamento', JSON.stringify(data.equipaggiamento));
+
+                    // Ricarica le tabelle
+                    caricaAbilita();
+                    caricaEquipaggiamento();
+                } else {
+                    alert('Formato del file JSON non valido.');
+                }
+            } catch (error) {
+                alert('Errore nel caricare il file JSON.');
+            }
+        };
+
+        reader.readAsText(file);
+    }
+
+    // Carica i dati da localStorage quando la pagina è pronta
+    document.addEventListener('DOMContentLoaded', () => {
+        caricaAbilita();
+        caricaEquipaggiamento();
+    });
+</script>
+
+<a href="abilita.html" target="_blank">
+    <button style="background-color: #ff4c4c; border: none; color: white; padding: 15px 32px; font-size: 18px; cursor: pointer; border-radius: 5px; transition: background-color 0.3s;">
+        Vai alla pagina delle Abilità
+    </button>
+</a>
+
+</body>
+</html>
+
