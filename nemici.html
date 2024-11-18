@@ -1,0 +1,109 @@
+<h1>Tabella Nemici</h1>
+
+<!-- Tabella per i nemici e le protezioni -->
+<table id="tabella_ferite" border="1">
+    <thead>
+        <tr>
+            <th>Nemico</th>
+            <th>Nome Nemico</th>
+            <th>Indice Ferite</th>
+            <th>Danni</th>
+            <th>Protezione</th>
+            <th>Stato della Ferita</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aggiungeremo dinamicamente le righe per i nemici -->
+        <script>
+            // Funzione per creare le righe della tabella
+            function creaTabellaNemici() {
+                const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
+                for (let i = 1; i <= 15; i++) {
+                    let nuovaRiga = tabella.insertRow();
+                    nuovaRiga.innerHTML = `
+                        <td>Nemico ${i}</td>
+                        <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
+                        <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice" min="1" max="10"></td>
+                        <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
+                        <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
+                        <td><span id="stato_${i}"></span></td>
+                    `;
+                }
+            }
+
+            // Funzione per aggiornare lo stato della ferita di un nemico specifico
+            function aggiornaStatoNemico(id) {
+                const nome = document.getElementById(`nome_${id}`).value;
+                const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
+                const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
+                const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
+                const danniEffettivi = Math.max(danno - protezione, 0);  // I danni effettivi non possono essere negativi
+
+                let statoFerita = "";
+                const lieveMax = indice;
+                const mediaMax = lieveMax * 2;
+                const laceranteMax = lieveMax * 3;
+                const profondaMax = lieveMax * 4;
+                const criticaMax = lieveMax * 5;
+
+                if (danniEffettivi <= lieveMax) statoFerita = "Lieve";
+                else if (danniEffettivi <= mediaMax) statoFerita = "Media";
+                else if (danniEffettivi <= laceranteMax) statoFerita = "Lacerante";
+                else if (danniEffettivi <= profondaMax) statoFerita = "Profonda";
+                else if (danniEffettivi <= criticaMax) statoFerita = "Critica";
+                else statoFerita = "Grave";
+
+                // Visualizza lo stato della ferita
+                document.getElementById(`stato_${id}`).innerText = statoFerita;
+
+                // Salva i dati in localStorage
+                localStorage.setItem(`nome_${id}`, nome);
+                localStorage.setItem(`indice_${id}`, indice);
+                localStorage.setItem(`danno_${id}`, danno);
+                localStorage.setItem(`protezione_${id}`, protezione);
+            }
+
+            // Funzione per caricare i dati salvati dal localStorage
+            function caricaDati() {
+                for (let i = 1; i <= 15; i++) {
+                    const nomeSalvato = localStorage.getItem(`nome_${i}`);
+                    const indiceSalvato = localStorage.getItem(`indice_${i}`);
+                    const dannoSalvato = localStorage.getItem(`danno_${i}`);
+                    const protezioneSalvata = localStorage.getItem(`protezione_${i}`);
+                    if (nomeSalvato !== null) document.getElementById(`nome_${i}`).value = nomeSalvato;
+                    if (indiceSalvato !== null) document.getElementById(`indice_${i}`).value = indiceSalvato;
+                    if (dannoSalvato !== null) document.getElementById(`danno_${i}`).value = dannoSalvato;
+                    if (protezioneSalvata !== null) document.getElementById(`protezione_${i}`).value = protezioneSalvata;
+                    aggiornaStatoNemico(i);
+                }
+            }
+
+            // Caricare la tabella e i dati salvati quando la pagina viene caricata
+            window.addEventListener('load', () => {
+                creaTabellaNemici();
+                caricaDati();
+            });
+        </script>
+    </tbody>
+</table>
+
+<style>
+    /* Stile base per la tabella */
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: center;
+    }
+    input[type="number"], input[type="text"] {
+        width: 100px;
+        padding: 5px;
+        text-align: center;
+    }
+    span {
+        font-weight: bold;
+    }
+</style>
