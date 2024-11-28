@@ -233,6 +233,69 @@
    
 </div>
 
+    <div style="margin-bottom: 20px;">
+        <label for="dadi" style="font-size: 1.2em; margin-right: 10px;">Dadi (es. 1d6+2d8):</label>
+        <input type="text" id="dadi" placeholder="Es. 1d6+1d8" style="padding: 5px; width: 200px;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label for="bonusMalus" style="font-size: 1.2em; margin-right: 10px;">Bonus/Malus (es. +2, -1):</label>
+        <input type="number" id="bonusMalus" placeholder="Bonus/Malus" style="padding: 5px; width: 100px;">
+    </div>
+
+    <button onclick="effettuaTiro()" style="padding: 10px 20px; font-size: 1.2em; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+        Tira i Dadi
+    </button>
+
+    <div id="result" style="margin-top: 30px; font-size: 1.5em;"></div>
+</div>
+
+<script>
+    // Funzione per generare un numero casuale tra 1 e max
+    function lanciaDado(tipoDado) {
+        return Math.floor(Math.random() * tipoDado) + 1;
+    }
+
+    // Funzione per effettuare il tiro dei dadi in base alla combinazione data
+    function effettuaTiro() {
+        const inputDadi = document.getElementById('dadi').value.trim();
+        const bonusMalus = parseInt(document.getElementById('bonusMalus').value) || 0;
+        const espressione = inputDadi.split('+');
+        let risultatiDadi = [];
+        let sommaTotale = 0;
+
+        // Elabora ogni parte dell'espressione
+        espressione.forEach(parte => {
+            const match = parte.match(/^(\d*)d(\d+)$/);
+            
+            if (match) {
+                const numDadi = match[1] === "" ? 1 : parseInt(match[1]);
+                const tipoDado = parseInt(match[2]);
+
+                // Lancia i dadi e calcola la somma dei risultati
+                for (let i = 0; i < numDadi; i++) {
+                    let tiroDado = lanciaDado(tipoDado);
+                    risultatiDadi.push(tiroDado);
+                    sommaTotale += tiroDado;
+                }
+            } else {
+                // Se il formato non è corretto, mostra un errore
+                document.getElementById('result').innerHTML = "<p style='color: red;'>Formato non valido. Usa il formato 'NdM', come '1d6+2d8'.</p>";
+                return;
+            }
+        });
+
+        // Applica il bonus/malus al totale finale
+        const totaleConBonusMalus = sommaTotale + bonusMalus;
+
+        // Mostra i risultati dei dadi e la somma finale
+        let risultatiHtml = "Risultati dei dadi lanciati: <br>" + risultatiDadi.join(', ') + "<br><br>";
+        risultatiHtml += `Somma Totale (senza bonus/malus): ${sommaTotale}<br>`;
+        risultatiHtml += `Somma Totale (con bonus/malus): ${totaleConBonusMalus}`;
+
+        document.getElementById('result').innerHTML = risultatiHtml;
+    }
+</script>
 
 
 
