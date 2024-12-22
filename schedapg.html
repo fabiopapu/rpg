@@ -34,7 +34,6 @@
     </style>
 </head>
 <body>
-
 <h1>SCHEDA PG</h1>
 
 
@@ -191,48 +190,7 @@
         <p id="result" class="result"></p>
     </div>
 
-    <script>
-        function calcolaMS() {
-            var inputValue = parseInt(document.getElementById('inputValue').value);
-            var risultato = '';
-            var dadi = '';
-            var ms = 0;
 
-            if (isNaN(inputValue)) {
-                risultato = 'Inserisci un numero valido.';
-                dadi = '';
-            } else {
-                if (inputValue <= 5) {
-                    // Margine di Successo
-                    ms = 5 - inputValue;
-                    risultato = `Margine di Successo: ${ms}`;
-                } else {
-                    // Margine di Insuccesso
-                    ms = inputValue - 5;
-                    risultato = `Margine di Insuccesso: ${ms}`;
-                }
-
-                // Determina il numero di dadi da tirare in base al margine
-                if (ms <= 2) {
-                    dadi = 'Tira 1D10';
-                } else if (ms <= 4) {
-                    dadi = 'Tira 2D10';
-                } else if (ms <= 6) {
-                    dadi = 'Tira 3D10';
-                } else if (ms <= 8) {
-                    dadi = 'Tira 4D10';
-                } else if (ms <= 10) {
-                    dadi = 'Tira 5D10';
-                } else if (ms <= 12) {
-                    dadi = 'Tira 6D10';
-                } else {
-                    dadi = 'Tira 6D10 o più';
-                }
-            }
-
-            document.getElementById('result').innerText = `${risultato}\n${dadi}`;
-        }
-    </script>
 
    
 </div>
