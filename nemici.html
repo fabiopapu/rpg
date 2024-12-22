@@ -257,12 +257,9 @@
             return { rolls, totalBonus };
         }
 
-        // Funzione che esegue il lancio dei dadi e calcola MS
+       // Funzione che esegue il lancio dei dadi e calcola MS
         function rollDiceAndCalculateMS() {
             const expression = document.getElementById('diceExpression').value;
-            let risultato = '';
-            let dadi = '';
-            let ms = 0;
             let total = 0;
             let individualRolls = [];
 
@@ -281,17 +278,19 @@
 
             total += totalBonus;
 
-            // Calcola MS in base al risultato del primo dado
-            const firstRoll = individualRolls[0]?.rolls[0] || 0;  // Usa il primo dado (se presente)
-            if (firstRoll <= 5) {
-                ms = 5 - firstRoll;
+            // Calcola MS/MI in base al risultato totale
+            let ms = 0;
+            let risultato = '';
+            if (total <= 5) {
+                ms = 5 - total;
                 risultato = `Margine di Successo: ${ms}`;
             } else {
-                ms = firstRoll - 5;
+                ms = total - 5;
                 risultato = `Margine di Insuccesso: ${ms}`;
             }
 
             // Determina il numero di dadi da tirare in base al margine
+            let dadi = '';
             if (ms <= 2) {
                 dadi = 'Tira 1D10';
             } else if (ms <= 4) {
@@ -323,6 +322,7 @@
                 <p>${dadi}</p>
             `;
         }
+
 
   // Funzione per calcolare i danni
         function calculateDamage() {
@@ -367,5 +367,3 @@
     </script>
 </body>
 </html>
-
-
