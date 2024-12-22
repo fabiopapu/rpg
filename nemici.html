@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -137,20 +138,12 @@
         <div class="row">
             <div class="column">
                 <section>
-                    <h2>Lancio Dadi</h2>
+                    <h2>Lancio Dadi e MS-MI</h2>
                     <div class="form-group">
                         <label for="diceExpression">Espressione Dadi (es. 1d12+2d6):</label>
                         <input type="text" id="diceExpression" placeholder="Inserisci l'espressione del lancio">
                     </div>
-                    <button onclick="rollDice()">Lancia i Dadi</button>
-                </section>
-
-                <section>
-                    <h2>Calcolatore MS-MI</h2>
-                    <label for="inputValue">Valore (es. -3, 0, 2, 8):</label>
-                    <input type="number" id="inputValue" placeholder="Inserisci il valore">
-                    <button onclick="calcolaMS()">Calcola MS</button>
-                    <p id="result" class="result"></p>
+                    <button onclick="rollDiceAndCalculateMS()">Lancia i Dadi e Calcola MS</button>
                 </section>
             </div>
 
@@ -264,39 +257,74 @@
             return { rolls, totalBonus };
         }
 
-        // Funzione che esegue il lancio dei dadi
-        function rollDice() {
+        // Funzione che esegue il lancio dei dadi e calcola MS
+        function rollDiceAndCalculateMS() {
             const expression = document.getElementById('diceExpression').value;
-            const { rolls, totalBonus } = parseDiceExpression(expression);
-            let individualRolls = [];
+            let risultato = '';
+            let dadi = '';
+            let ms = 0;
             let total = 0;
+            let individualRolls = [];
+
+            // Elabora l'espressione dei dadi
+            const { rolls, totalBonus } = parseDiceExpression(expression);
 
             rolls.forEach(({ count, sides }) => {
                 let diceRolls = [];
                 for (let i = 0; i < count; i++) {
                     const roll = Math.floor(Math.random() * sides) + 1;
                     diceRolls.push(roll);
-                    total += roll; // Somma il risultato del dado
+                    total += roll;
                 }
                 individualRolls.push({ sides, rolls: diceRolls });
             });
 
             total += totalBonus;
 
+            // Calcola MS in base al risultato del primo dado
+            const firstRoll = individualRolls[0]?.rolls[0] || 0;  // Usa il primo dado (se presente)
+            if (firstRoll <= 5) {
+                ms = 5 - firstRoll;
+                risultato = `Margine di Successo: ${ms}`;
+            } else {
+                ms = firstRoll - 5;
+                risultato = `Margine di Insuccesso: ${ms}`;
+            }
+
+            // Determina il numero di dadi da tirare in base al margine
+            if (ms <= 2) {
+                dadi = 'Tira 1D10';
+            } else if (ms <= 4) {
+                dadi = 'Tira 2D10';
+            } else if (ms <= 6) {
+                dadi = 'Tira 3D10';
+            } else if (ms <= 8) {
+                dadi = 'Tira 4D10';
+            } else if (ms <= 10) {
+                dadi = 'Tira 5D10';
+            } else if (ms <= 12) {
+                dadi = 'Tira 6D10';
+            } else {
+                dadi = 'Tira 6D10 o più';
+            }
+
+            // Mostra i risultati
             let rollsDetails = individualRolls
                 .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
                 .join('<br>');
 
             document.getElementById('results').innerHTML = `
-                <h3>Risultati Lancio Dadi</h3>
-                <p>Espressione: ${expression}</p>
+                <h3>Risultati Lancio Dadi e Calcolo MS</h3>
+                <p>Espressione Dadi: ${expression}</p>
                 <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
                 <p>Bonus/Malus: ${totalBonus}</p>
                 <p>Totale (incluso bonus/malus): ${total}</p>
+                <p>${risultato}</p>
+                <p>${dadi}</p>
             `;
         }
 
-        // Funzione per calcolare i danni
+  // Funzione per calcolare i danni
         function calculateDamage() {
             const expression = document.getElementById('diceExpression').value;
             const armorModifier = parseInt(document.getElementById('armorModifier').value);
@@ -309,48 +337,35 @@
                 for (let i = 0; i < count; i++) {
                     const roll = Math.floor(Math.random() * sides) + 1;
                     diceRolls.push(roll);
-                    damage += roll; // Somma il risultato del dado
+                    
+                    let adjustedRoll = roll;
+
+                    if (sides === 10 && roll === 10) {
+                        damage += 2;
+                    } else {
+                        if (roll >= (5 + armorModifier)) {
+                            damage++;
+                        }
+                    }
                 }
                 individualRolls.push({ sides, rolls: diceRolls });
             });
-
-            damage += totalBonus + armorModifier;
 
             let rollsDetails = individualRolls
                 .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
                 .join('<br>');
 
             document.getElementById('results').innerHTML = `
-                <h3>Risultato Danno</h3>
+                <h3>Risultati Calcolo Danno</h3>
                 <p>Espressione: ${expression}</p>
                 <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
-                <p>Bonus Armatura: ${armorModifier}</p>
-                <p>Totale Danno: ${damage}</p>
+                <p>Modificatore Armatura: ${armorModifier}</p>
+                <p>Bonus/Malus: ${totalBonus}</p>
+                <p>Danno Inflitto: ${damage}</p>
             `;
-        }
-
-        // Funzione per calcolare MS
-        function calcolaMS() {
-            const valore = parseInt(document.getElementById('inputValue').value);
-            let risultato = "MS=";
-            if (valore <= -5) {
-                risultato += "-5";
-            } else if (valore <= 0) {
-                risultato += "0";
-            } else if (valore <= 5) {
-                risultato += "5";
-            } else if (valore <= 10) {
-                risultato += "10";
-            } else {
-                risultato += "15";
-            }
-            document.getElementById("result").innerText = risultato;
         }
     </script>
 </body>
 </html>
 
-
-</body>
-</html>
 
