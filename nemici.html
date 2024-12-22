@@ -364,6 +364,151 @@
                 <p>Danno Inflitto: ${damage}</p>
             `;
         }
+
+ // Funzione per salvare i dati in localStorage
+    function salvaDati() {
+        const nemici = [];
+        const numNemici = 15; // Numero massimo di nemici nella tabella
+        for (let i = 1; i <= numNemici; i++) {
+            const nome = document.getElementById(`nome_${i}`).value || "";
+            const indice = document.getElementById(`indice_${i}`).value || "";
+            const danno = document.getElementById(`danno_${i}`).value || "";
+            const protezione = document.getElementById(`protezione_${i}`).value || "";
+            nemici.push({ nome, indice, danno, protezione });
+        }
+
+        const dati = {
+            diceExpression: document.getElementById('diceExpression').value || "",
+            armorModifier: document.getElementById('armorModifier').value || 0,
+            nemici,
+        };
+
+        localStorage.setItem("datiBackup", JSON.stringify(dati));
+    }
+
+    // Funzione per ripristinare i dati da localStorage
+    function ripristinaDati() {
+        const datiSalvati = localStorage.getItem("datiBackup");
+        if (datiSalvati) {
+            const dati = JSON.parse(datiSalvati);
+            document.getElementById('diceExpression').value = dati.diceExpression || "";
+            document.getElementById('armorModifier').value = dati.armorModifier || 0;
+
+            dati.nemici.forEach((nemico, index) => {
+                const i = index + 1; // Indice parte da 1
+                if (nemico) {
+                    document.getElementById(`nome_${i}`).value = nemico.nome || "";
+                    document.getElementById(`indice_${i}`).value = nemico.indice || "";
+                    document.getElementById(`danno_${i}`).value = nemico.danno || "";
+                    document.getElementById(`protezione_${i}`).value = nemico.protezione || "";
+                    aggiornaStatoNemico(i);
+                }
+            });
+        }
+    }
+
+    // Salva i dati automaticamente prima di ricaricare o chiudere la pagina
+    window.addEventListener("beforeunload", salvaDati);
+
+    // Ripristina i dati al caricamento della pagina
+    window.addEventListener("load", ripristinaDati);
+
+// Funzione per salvare i dati in un file JSON
+    function salvaInFile() {
+        const nemici = [];
+        const numNemici = 15; // Numero massimo di nemici nella tabella
+        for (let i = 1; i <= numNemici; i++) {
+            const nome = document.getElementById(`nome_${i}`).value || "";
+            const indice = document.getElementById(`indice_${i}`).value || "";
+            const danno = document.getElementById(`danno_${i}`).value || "";
+            const protezione = document.getElementById(`protezione_${i}`).value || "";
+            nemici.push({ nome, indice, danno, protezione });
+        }
+
+        const dati = {
+            diceExpression: document.getElementById('diceExpression').value || "",
+            armorModifier: document.getElementById('armorModifier').value || 0,
+            nemici,
+        };
+
+        const blob = new Blob([JSON.stringify(dati, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "dati_backup.json"; // Nome predefinito del file
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Funzione per caricare i dati da un file JSON
+    function caricaDaFile(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            alert("Seleziona un file per caricare i dati!");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const dati = JSON.parse(e.target.result);
+
+                // Ripristina i campi salvati
+                document.getElementById('diceExpression').value = dati.diceExpression || "";
+                document.getElementById('armorModifier').value = dati.armorModifier || 0;
+
+                dati.nemici.forEach((nemico, index) => {
+                    const i = index + 1; // Indice parte da 1
+                    if (nemico) {
+                        document.getElementById(`nome_${i}`).value = nemico.nome || "";
+                        document.getElementById(`indice_${i}`).value = nemico.indice || "";
+                        document.getElementById(`danno_${i}`).value = nemico.danno || "";
+                        document.getElementById(`protezione_${i}`).value = nemico.protezione || "";
+                        aggiornaStatoNemico(i);
+                    }
+                });
+
+                alert("Dati caricati correttamente!");
+            } catch (error) {
+                alert("Errore durante il caricamento del file. Assicurati che sia un file JSON valido.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // Aggiunge i pulsanti al DOM
+    document.addEventListener("DOMContentLoaded", function() {
+        const container = document.querySelector('.container');
+
+        // Crea il pulsante per salvare
+        const salvaBtn = document.createElement("button");
+        salvaBtn.innerText = "Salva in File";
+        salvaBtn.style.marginRight = "10px";
+        salvaBtn.onclick = salvaInFile;
+
+        // Crea l'input per caricare
+        const caricaInput = document.createElement("input");
+        caricaInput.type = "file";
+        caricaInput.accept = "application/json";
+        caricaInput.style.marginRight = "10px";
+        caricaInput.onchange = caricaDaFile;
+
+        // Crea una descrizione per il caricamento
+        const caricaLabel = document.createElement("label");
+        caricaLabel.innerText = "Carica File:";
+        caricaLabel.style.marginRight = "10px";
+
+        // Aggiungi tutto al contenitore
+        const controls = document.createElement("div");
+        controls.style.marginTop = "20px";
+        controls.appendChild(salvaBtn);
+        controls.appendChild(caricaLabel);
+        controls.appendChild(caricaInput);
+
+        container.appendChild(controls);
+    });
     </script>
+
+
 </body>
 </html>
