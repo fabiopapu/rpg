@@ -159,3 +159,298 @@
         font-weight: bold;
     }
 </style>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Dadi e MS-MI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555555;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        input, button {
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .results p {
+            font-size: 18px;
+            color: #333333;
+            margin: 5px 0;
+        }
+
+        .result {
+            font-size: 1.5em;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        /* Stile per il layout a due colonne */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .column {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calcolatore Dadi & MS-MI</h1>
+
+        <div class="row">
+            <!-- Prima colonna: Calcolatore Dadi -->
+            <div class="column">
+                <section>
+                    <h2>Lancio Dadi</h2>
+                    <div class="form-group">
+                        <label for="diceExpression">Espressione Dadi (es. 1d12+2d6):</label>
+                        <input type="text" id="diceExpression" placeholder="Inserisci l'espressione del lancio">
+                    </div>
+                    <button onclick="rollDice()">Lancia i Dadi</button>
+                </section>
+
+                <section>
+                    <h2>Calcolatore MS-MI</h2>
+                    <label for="inputValue">Valore (es. -3, 0, 2, 8):</label>
+                    <input type="number" id="inputValue" placeholder="Inserisci il valore">
+                    <button onclick="calcolaMS()">Calcola MS</button>
+                    <p id="result" class="result"></p>
+                </section>
+            </div>
+
+            <!-- Seconda colonna: Calcolatore MS-MI -->
+            <div class="column">
+                <section>
+                    <h2>Calcolo Danno</h2>
+                    <div class="form-group">
+                        <label for="armorModifier">Modificatore Armatura (+1, +2, ecc.):</label>
+                        <input type="number" id="armorModifier" value="0">
+                    </div>
+                    <button onclick="calculateDamage()">Calcola Danno</button>
+                </section>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        // Funzione che elabora l'espressione dei dadi
+        function parseDiceExpression(expression) {
+            const regex = /(\d*)d(\d+)|([+-]\d+)/g;
+            let match;
+            const rolls = [];
+            let totalBonus = 0;
+
+            while ((match = regex.exec(expression)) !== null) {
+                if (match[1] && match[2]) {
+                    // Tiro di dadi, es. 2d6
+                    let count = match[1] ? parseInt(match[1]) : 1;
+                    let sides = parseInt(match[2]);
+                    rolls.push({ count, sides });
+                } else if (match[3]) {
+                    // Bonus o malus, es. +3 o -2
+                    totalBonus += parseInt(match[3]);
+                }
+            }
+
+            return { rolls, totalBonus };
+        }
+
+        // Funzione che esegue il lancio dei dadi
+        function rollDice() {
+            const expression = document.getElementById('diceExpression').value;
+            const { rolls, totalBonus } = parseDiceExpression(expression);
+            let individualRolls = [];
+            let total = 0;
+
+            // Processa ogni tipo di dado
+            rolls.forEach(({ count, sides }) => {
+                let diceRolls = [];
+                for (let i = 0; i < count; i++) {
+                    const roll = Math.floor(Math.random() * sides) + 1;
+                    diceRolls.push(roll);
+                    total += roll; // Somma il risultato del dado
+                }
+                individualRolls.push({ sides, rolls: diceRolls });
+            });
+
+            // Aggiunge il bonus/malus al totale
+            total += totalBonus;
+
+            // Genera la stringa di dettaglio dei lanci
+            let rollsDetails = individualRolls
+                .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
+                .join('<br>');
+
+            // Mostra i risultati nel div
+            document.getElementById('results').innerHTML = `
+                <h3>Risultati Lancio Dadi</h3>
+                <p>Espressione: ${expression}</p>
+                <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
+                <p>Bonus/Malus: ${totalBonus}</p>
+                <p>Totale (incluso bonus/malus): ${total}</p>
+            `;
+        }
+
+        // Funzione per calcolare i danni
+        function calculateDamage() {
+            const expression = document.getElementById('diceExpression').value;
+            const armorModifier = parseInt(document.getElementById('armorModifier').value);
+            const { rolls, totalBonus } = parseDiceExpression(expression);
+            let individualRolls = [];
+            let damage = 0;
+
+            // Processa ogni tipo di dado
+            rolls.forEach(({ count, sides }) => {
+                let diceRolls = [];
+                for (let i = 0; i < count; i++) {
+                    const roll = Math.floor(Math.random() * sides) + 1;
+                    diceRolls.push(roll);
+                    
+                    // Applicare le regole del danno
+                    let adjustedRoll = roll;
+
+                    // Se il dado è un D10, e il risultato è 10, conta come doppio
+                    if (sides === 10 && roll === 10) {
+                        damage += 2;
+                    } else {
+                        // Se il dado è >= 5, infligge danno, tenendo conto dell'armatura
+                        if (roll >= (5 + armorModifier)) {
+                            damage++;
+                        }
+                    }
+                }
+                individualRolls.push({ sides, rolls: diceRolls });
+            });
+
+            // Genera la stringa di dettaglio dei lanci
+            let rollsDetails = individualRolls
+                .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
+                .join('<br>');
+
+            // Mostra i risultati nel div
+            document.getElementById('results').innerHTML = `
+                <h3>Risultati Calcolo Danno</h3>
+                <p>Espressione: ${expression}</p>
+                <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
+                <p>Modificatore Armatura: ${armorModifier}</p>
+                <p>Bonus/Malus: ${totalBonus}</p>
+                <p>Danno Inflitto: ${damage}</p>
+            `;
+        }
+
+        // Funzione per calcolare MS
+        function calcolaMS() {
+            var inputValue = parseInt(document.getElementById('inputValue').value);
+            var risultato = '';
+            var dadi = '';
+            var ms = 0;
+
+            if (isNaN(inputValue)) {
+                risultato = 'Inserisci un numero valido.';
+                dadi = '';
+            } else {
+                if (inputValue <= 5) {
+                    ms = 5 - inputValue;
+                    risultato = `Margine di Successo: ${ms}`;
+                } else {
+                    ms = inputValue - 5;
+                    risultato = `Margine di Insuccesso: ${ms}`;
+                }
+
+                // Determina il numero di dadi da tirare
+                if (ms <= 2) {
+                    dadi = 'Tira 1D10';
+                } else if (ms <= 4) {
+                    dadi = 'Tira 2D10';
+                } else if (ms <= 6) {
+                    dadi = 'Tira 3D10';
+                } else if (ms <= 8) {
+                    dadi = 'Tira 4D10';
+                } else if (ms <= 10) {
+                    dadi = 'Tira 5D10';
+                } else if (ms <= 12) {
+                    dadi = 'Tira 6D10';
+                } else {
+                    dadi = 'Tira 6D10 o più';
+                }
+            }
+
+            document.getElementById('result').innerText = `${risultato}\n${dadi}`;
+        }
+    </script>
+</body>
+</html>
+
+
