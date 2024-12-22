@@ -1,4 +1,4 @@
-
+<!DOC
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -6,6 +6,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modulo Personaggio GDR</title>
     <style>
+
+/* Reset delle impostazioni di base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corpo della pagina */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px;
+}
+
+/* Layout della pagina */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 48%;
+}
+
+/* Etichette e input */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Tabelle */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Sezione Equipaggiamento */
+.equipaggiamento-section {
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Bonus */
+.bonus {
+    font-weight: bold;
+    color: #28a745;
+}
+
         body { font-family: Arial, sans-serif; }
         .container { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .section { margin-bottom: 20px; }
@@ -31,10 +118,17 @@
         }
 
         .bonus { font-weight: bold; color: green; }
+
+.container {
+  display: flex;
+  gap: 0px; /* Riduce lo spazio tra gli elementi */
+}
+
+
+
     </style>
 </head>
 <body>
-<h1>SCHEDA PG</h1>
 
 
 <div class="equipaggiamento-section">
@@ -413,6 +507,7 @@ window.addEventListener('beforeunload', () => {
 </body>
 </html>
 
+
 <br><br>
 
 <!DOCTYPE html>
@@ -636,6 +731,7 @@ window.addEventListener('beforeunload', () => {
         .remove-btn:hover {
             background-color: darkred;
         }
+
     </style>
 </head>
 <body>
@@ -899,4 +995,5 @@ window.addEventListener('beforeunload', () => {
 
 </body>
 </html>
+
 
