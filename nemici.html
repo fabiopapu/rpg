@@ -90,7 +90,35 @@
             margin-bottom: 30px;
         }
 
-        /* Stile per il layout a due colonne */
+        /* Centralizza la tabella dei nemici */
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        td input {
+            width: 100%;
+        }
+
         .row {
             display: flex;
             justify-content: space-between;
@@ -107,7 +135,6 @@
         <h1>Calcolatore Dadi & MS-MI</h1>
 
         <div class="row">
-            <!-- Prima colonna: Calcolatore Dadi -->
             <div class="column">
                 <section>
                     <h2>Lancio Dadi</h2>
@@ -127,7 +154,6 @@
                 </section>
             </div>
 
-            <!-- Seconda colonna: Calcolatore MS-MI -->
             <div class="column">
                 <section>
                     <h2>Calcolo Danno</h2>
@@ -141,6 +167,78 @@
         </div>
 
         <div class="results" id="results"></div>
+    </div>
+
+    <div class="table-container">
+        <table id="tabella_ferite">
+            <thead>
+                <tr>
+                    <th>Nemico</th>
+                    <th>Nome Nemico</th>
+                    <th>Indice Ferite</th>
+                    <th>Danni</th>
+                    <th>Protezione</th>
+                    <th>Stato della Ferita</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aggiungeremo dinamicamente le righe per i nemici -->
+                <script>
+                    function creaTabellaNemici() {
+                        const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
+                        for (let i = 1; i <= 15; i++) {
+                            let nuovaRiga = tabella.insertRow();
+                            nuovaRiga.innerHTML = `  
+                                <td>Nemico ${i}</td>
+                                <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
+                                <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice" min="1" max="10"></td>
+                                <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
+                                <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
+                                <td><span id="stato_${i}"></span></td>
+                            `;
+                        }
+                    }
+
+                    function aggiornaStatoNemico(id) {
+                        const nome = document.getElementById(`nome_${id}`).value;
+                        const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
+                        const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
+                        const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
+                        const danniEffettivi = Math.max(danno - protezione, 0);
+
+                        let statoFerita = "";
+                        const lieveMax = indice;
+                        const mediaMax = lieveMax * 2;
+                        const laceranteMax = lieveMax * 3;
+                        const profondaMax = lieveMax * 4;
+                        const criticaMax = lieveMax * 5;
+                        const morteSoglia = indice * 10;  // Soglia per "Morte"
+
+                        // Determinazione dello stato
+                        if (danniEffettivi >= morteSoglia) {
+                            statoFerita = "Morte";  // Stato Morte aggiunto qui
+                        } else if (danniEffettivi <= lieveMax) {
+                            statoFerita = "Lieve";
+                        } else if (danniEffettivi <= mediaMax) {
+                            statoFerita = "Media";
+                        } else if (danniEffettivi <= laceranteMax) {
+                            statoFerita = "Lacerante";
+                        } else if (danniEffettivi <= profondaMax) {
+                            statoFerita = "Profonda";
+                        } else if (danniEffettivi <= criticaMax) {
+                            statoFerita = "Critica";
+                        } else {
+                            statoFerita = "Grave";  // Stato Grave se i danni sono maggiori della soglia di Critica
+                        }
+
+                        // Aggiorna il testo dello stato nella tabella
+                        document.getElementById(`stato_${id}`).innerText = statoFerita;
+                    }
+
+                    creaTabellaNemici();
+                </script>
+            </tbody>
+        </table>
     </div>
 
     <script>
@@ -173,7 +271,6 @@
             let individualRolls = [];
             let total = 0;
 
-            // Processa ogni tipo di dado
             rolls.forEach(({ count, sides }) => {
                 let diceRolls = [];
                 for (let i = 0; i < count; i++) {
@@ -184,15 +281,12 @@
                 individualRolls.push({ sides, rolls: diceRolls });
             });
 
-            // Aggiunge il bonus/malus al totale
             total += totalBonus;
 
-            // Genera la stringa di dettaglio dei lanci
             let rollsDetails = individualRolls
                 .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
                 .join('<br>');
 
-            // Mostra i risultati nel div
             document.getElementById('results').innerHTML = `
                 <h3>Risultati Lancio Dadi</h3>
                 <p>Espressione: ${expression}</p>
@@ -210,251 +304,51 @@
             let individualRolls = [];
             let damage = 0;
 
-            // Processa ogni tipo di dado
             rolls.forEach(({ count, sides }) => {
                 let diceRolls = [];
                 for (let i = 0; i < count; i++) {
                     const roll = Math.floor(Math.random() * sides) + 1;
                     diceRolls.push(roll);
-                    
-                    // Applicare le regole del danno
-                    let adjustedRoll = roll;
-
-                    // Se il dado è un D10, e il risultato è 10, conta come doppio
-                    if (sides === 10 && roll === 10) {
-                        damage += 2;
-                    } else {
-                        // Se il dado è >= 5, infligge danno, tenendo conto dell'armatura
-                        if (roll >= (5 + armorModifier)) {
-                            damage++;
-                        }
-                    }
+                    damage += roll; // Somma il risultato del dado
                 }
                 individualRolls.push({ sides, rolls: diceRolls });
             });
 
-            // Genera la stringa di dettaglio dei lanci
+            damage += totalBonus + armorModifier;
+
             let rollsDetails = individualRolls
                 .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
                 .join('<br>');
 
-            // Mostra i risultati nel div
             document.getElementById('results').innerHTML = `
-                <h3>Risultati Calcolo Danno</h3>
+                <h3>Risultato Danno</h3>
                 <p>Espressione: ${expression}</p>
                 <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
-                <p>Modificatore Armatura: ${armorModifier}</p>
-                <p>Bonus/Malus: ${totalBonus}</p>
-                <p>Danno Inflitto: ${damage}</p>
+                <p>Bonus Armatura: ${armorModifier}</p>
+                <p>Totale Danno: ${damage}</p>
             `;
         }
 
         // Funzione per calcolare MS
         function calcolaMS() {
-            var inputValue = parseInt(document.getElementById('inputValue').value);
-            var risultato = '';
-            var dadi = '';
-            var ms = 0;
-
-            if (isNaN(inputValue)) {
-                risultato = 'Inserisci un numero valido.';
-                dadi = '';
+            const valore = parseInt(document.getElementById('inputValue').value);
+            let risultato = "MS=";
+            if (valore <= -5) {
+                risultato += "-5";
+            } else if (valore <= 0) {
+                risultato += "0";
+            } else if (valore <= 5) {
+                risultato += "5";
+            } else if (valore <= 10) {
+                risultato += "10";
             } else {
-                if (inputValue <= 5) {
-                    ms = 5 - inputValue;
-                    risultato = `Margine di Successo: ${ms}`;
-                } else {
-                    ms = inputValue - 5;
-                    risultato = `Margine di Insuccesso: ${ms}`;
-                }
-
-                // Determina il numero di dadi da tirare
-                if (ms <= 2) {
-                    dadi = 'Tira 1D10';
-                } else if (ms <= 4) {
-                    dadi = 'Tira 2D10';
-                } else if (ms <= 6) {
-                    dadi = 'Tira 3D10';
-                } else if (ms <= 8) {
-                    dadi = 'Tira 4D10';
-                } else if (ms <= 10) {
-                    dadi = 'Tira 5D10';
-                } else if (ms <= 12) {
-                    dadi = 'Tira 6D10';
-                } else {
-                    dadi = 'Tira 6D10 o più';
-                }
+                risultato += "15";
             }
-
-            document.getElementById('result').innerText = `${risultato}\n${dadi}`;
+            document.getElementById("result").innerText = risultato;
         }
     </script>
-
-    
-
-
-<h1>Tabella Nemici</h1>
-
- <div class="container">
-        <h2>  MS-MI</h2> <br>
-        <label for="inputValue"></label>
-        <input type="number" id="inputValue" placeholder="Es. -3, 0, 2, 8" />
-        <button onclick="calcolaMS()">Calcola</button>
-        <p id="result" class="result"></p>
-    </div>
-
-    <script>
-        function calcolaMS() {
-            var inputValue = parseInt(document.getElementById('inputValue').value);
-            var risultato = '';
-            var dadi = '';
-            var ms = 0;
-
-            if (isNaN(inputValue)) {
-                risultato = 'Inserisci un numero valido.';
-                dadi = '';
-            } else {
-                if (inputValue <= 5) {
-                    // Margine di Successo
-                    ms = 5 - inputValue;
-                    risultato = `Margine di Successo: ${ms}`;
-                } else {
-                    // Margine di Insuccesso
-                    ms = inputValue - 5;
-                    risultato = `Margine di Insuccesso: ${ms}`;
-                }
-
-                // Determina il numero di dadi da tirare in base al margine
-                if (ms <= 2) {
-                    dadi = 'Tira 1D10';
-                } else if (ms <= 4) {
-                    dadi = 'Tira 2D10';
-                } else if (ms <= 6) {
-                    dadi = 'Tira 3D10';
-                } else if (ms <= 8) {
-                    dadi = 'Tira 4D10';
-                } else if (ms <= 10) {
-                    dadi = 'Tira 5D10';
-                } else if (ms <= 12) {
-                    dadi = 'Tira 6D10';
-                } else {
-                    dadi = 'Tira 6D10 o più';
-                }
-            }
-
-            document.getElementById('result').innerText = `${risultato}\n${dadi}`;
-        }
-    </script>
-
-
-<!-- Tabella per i nemici e le protezioni -->
-<table id="tabella_ferite" border="1">
-    <thead>
-        <tr>
-            <th>Nemico</th>
-            <th>Nome Nemico</th>
-            <th>Indice Ferite</th>
-            <th>Danni</th>
-            <th>Protezione</th>
-            <th>Stato della Ferita</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Aggiungeremo dinamicamente le righe per i nemici -->
-        <script>
-            // Funzione per creare le righe della tabella
-            function creaTabellaNemici() {
-                const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
-                for (let i = 1; i <= 15; i++) {
-                    let nuovaRiga = tabella.insertRow();
-                    nuovaRiga.innerHTML = `
-                        <td>Nemico ${i}</td>
-                        <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
-                        <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice" min="1" max="10"></td>
-                        <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
-                        <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
-                        <td><span id="stato_${i}"></span></td>
-                    `;
-                }
-            }
-
-            // Funzione per aggiornare lo stato della ferita di un nemico specifico
-            function aggiornaStatoNemico(id) {
-                const nome = document.getElementById(`nome_${id}`).value;
-                const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
-                const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
-                const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
-                const danniEffettivi = Math.max(danno - protezione, 0);  // I danni effettivi non possono essere negativi
-
-                let statoFerita = "";
-                const lieveMax = indice;
-                const mediaMax = lieveMax * 2;
-                const laceranteMax = lieveMax * 3;
-                const profondaMax = lieveMax * 4;
-                const criticaMax = lieveMax * 5;
-
-                if (danniEffettivi <= lieveMax) statoFerita = "Lieve";
-                else if (danniEffettivi <= mediaMax) statoFerita = "Media";
-                else if (danniEffettivi <= laceranteMax) statoFerita = "Lacerante";
-                else if (danniEffettivi <= profondaMax) statoFerita = "Profonda";
-                else if (danniEffettivi <= criticaMax) statoFerita = "Critica";
-                else statoFerita = "Grave";
-
-                // Visualizza lo stato della ferita
-                document.getElementById(`stato_${id}`).innerText = statoFerita;
-
-                // Salva i dati in localStorage
-                localStorage.setItem(`nome_${id}`, nome);
-                localStorage.setItem(`indice_${id}`, indice);
-                localStorage.setItem(`danno_${id}`, danno);
-                localStorage.setItem(`protezione_${id}`, protezione);
-            }
-
-            // Funzione per caricare i dati salvati dal localStorage
-            function caricaDati() {
-                for (let i = 1; i <= 15; i++) {
-                    const nomeSalvato = localStorage.getItem(`nome_${i}`);
-                    const indiceSalvato = localStorage.getItem(`indice_${i}`);
-                    const dannoSalvato = localStorage.getItem(`danno_${i}`);
-                    const protezioneSalvata = localStorage.getItem(`protezione_${i}`);
-                    if (nomeSalvato !== null) document.getElementById(`nome_${i}`).value = nomeSalvato;
-                    if (indiceSalvato !== null) document.getElementById(`indice_${i}`).value = indiceSalvato;
-                    if (dannoSalvato !== null) document.getElementById(`danno_${i}`).value = dannoSalvato;
-                    if (protezioneSalvata !== null) document.getElementById(`protezione_${i}`).value = protezioneSalvata;
-                    aggiornaStatoNemico(i);
-                }
-            }
-
-            // Caricare la tabella e i dati salvati quando la pagina viene caricata
-            window.addEventListener('load', () => {
-                creaTabellaNemici();
-                caricaDati();
-            });
-        </script>
-    </tbody>
-</table>
-
-<style>
-    /* Stile base per la tabella */
-    table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 8px;
-        text-align: center;
-    }
-    input[type="number"], input[type="text"] {
-        width: 100px;
-        padding: 5px;
-        text-align: center;
-    }
-    span {
-        font-weight: bold;
-    }
-</style>
-
+</body>
+</html>
 
 
 </body>
