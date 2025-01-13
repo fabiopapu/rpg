@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina di Discord e Tiro dei Dadi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left {
+            width: 50%;
+            background-color: #f4f4f4;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .right {
+            width: 50%;
+            background-color: #e9e9e9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .dice-container {
+            text-align: center;
+        }
+
+        .dice-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sezione sinistra per Discord -->
+        <div class="left">
+            <h2>Canale Discord</h2>
+           <iframe src="https://discordapp.com/widget?id=1298203123210260480&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+        </div>
+
+        <!-- Sezione destra per il tiro dei dadi -->
+        <div class="right">
+            <div class="dice-container">
+                <button class="dice-button" onclick="rollDice()">Tira i Dadi</button>
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function rollDice() {
+            // Genera un numero casuale tra 1 e 6 (come un dado normale)
+            let result = Math.floor(Math.random() * 6) + 1;
+
+            // Mostra il risultato nella pagina
+            document.getElementById("result").textContent = "Risultato: " + result;
+        }
+    </script>
+
+</body>
+</html>
