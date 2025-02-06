@@ -192,7 +192,7 @@
                         }
                     }
 
-                   function aggiornaStatoNemico(id) {
+            function aggiornaStatoNemico(id) {
     const nome = document.getElementById(`nome_${id}`).value;
     const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
     const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
@@ -200,34 +200,40 @@
     const danniEffettivi = Math.max(danno - protezione, 0);
 
     let statoFerita = "";
-    const lieveMax = indice;
+    
+    // Definisci gli intervalli per ogni stato
+    const intervallo = indice;  // Ad esempio, se "indice" è 4, l'intervallo sarà 4 danni per ogni passaggio di stato
+    const lieveMax = intervallo;
     const mediaMax = lieveMax * 2;
     const laceranteMax = lieveMax * 3;
     const profondaMax = lieveMax * 4;
     const criticaMax = lieveMax * 5;
-    const graveMax = criticaMax * 2;  // Aggiungi una soglia per Grave
+    const graveMax = lieveMax * 6;  // Soglia per Grave
     const morteSoglia = graveMax * 2;  // Soglia per "Morte"
 
-    // Determinazione dello stato
+    // Determinazione dello stato in base al danno effettivo
     if (danniEffettivi >= morteSoglia) {
         statoFerita = "Morte";  // Stato Morte se i danni superano la soglia di Morte
     } else if (danniEffettivi >= graveMax) {
-        statoFerita = "Grave";  // Stato Grave se i danni sono oltre la soglia di Critica
-    } else if (danniEffettivi <= lieveMax) {
-        statoFerita = "Lieve";
-    } else if (danniEffettivi <= mediaMax) {
-        statoFerita = "Media";
-    } else if (danniEffettivi <= laceranteMax) {
-        statoFerita = "Lacerante";
-    } else if (danniEffettivi <= profondaMax) {
-        statoFerita = "Profonda";
-    } else if (danniEffettivi <= criticaMax) {
+        statoFerita = "Grave";  // Stato Grave
+    } else if (danniEffettivi >= criticaMax) {
         statoFerita = "Critica";
+    } else if (danniEffettivi >= profondaMax) {
+        statoFerita = "Profonda";
+    } else if (danniEffettivi >= laceranteMax) {
+        statoFerita = "Lacerante";
+    } else if (danniEffettivi >= mediaMax) {
+        statoFerita = "Media";
+    } else if (danniEffettivi >= lieveMax) {
+        statoFerita = "Lieve";
+    } else {
+        statoFerita = "Nessuna Ferita";
     }
 
     // Aggiorna il testo dello stato nella tabella
     document.getElementById(`stato_${id}`).innerText = statoFerita;
 }
+
 
 
                     creaTabellaNemici();
