@@ -192,7 +192,7 @@
                         }
                     }
 
-            function aggiornaStatoNemico(id) {
+          function aggiornaStatoNemico(id) {
     const nome = document.getElementById(`nome_${id}`).value;
     const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
     const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
@@ -201,33 +201,37 @@
 
     let statoFerita = "";
     
-    // Definisci gli intervalli per ogni stato
-    const intervallo = indice;  // Ad esempio, se "indice" è 4, l'intervallo sarà 4 danni per ogni passaggio di stato
-    const lieveMax = intervallo;
-    const mediaMax = lieveMax * 2;
-    const laceranteMax = lieveMax * 3;
-    const profondaMax = lieveMax * 4;
-    const criticaMax = lieveMax * 5;
-    const graveMax = lieveMax * 6;  // Soglia per Grave
-    const morteSoglia = graveMax * 2;  // Soglia per "Morte"
+    // Definisci le soglie per ogni stato
+    const soglie = {
+        1: 0,      // Nessuna ferita
+        2: 10,     // Lieve
+        3: 20,     // Media
+        4: 30,     // Lacerante
+        5: 40,     // Profonda
+        6: 50,     // Critica
+        7: 60      // Grave
+    };
+    
+    // Calcola il danno totale accumulato
+    let dannoTotale = danniEffettivi;  // Se il PG ha già danni, somma quelli
 
-    // Determinazione dello stato in base al danno effettivo
-    if (danniEffettivi >= morteSoglia) {
-        statoFerita = "Morte";  // Stato Morte se i danni superano la soglia di Morte
-    } else if (danniEffettivi >= graveMax) {
-        statoFerita = "Grave";  // Stato Grave
-    } else if (danniEffettivi >= criticaMax) {
+    // Determina lo stato di ferita in base al danno accumulato
+    if (dannoTotale >= soglie[7]) {
+        statoFerita = "Morte";  // Se il danno supera la soglia per la morte
+    } else if (dannoTotale >= soglie[6]) {
+        statoFerita = "Grave";  
+    } else if (dannoTotale >= soglie[5]) {
         statoFerita = "Critica";
-    } else if (danniEffettivi >= profondaMax) {
+    } else if (dannoTotale >= soglie[4]) {
         statoFerita = "Profonda";
-    } else if (danniEffettivi >= laceranteMax) {
+    } else if (dannoTotale >= soglie[3]) {
         statoFerita = "Lacerante";
-    } else if (danniEffettivi >= mediaMax) {
+    } else if (dannoTotale >= soglie[2]) {
         statoFerita = "Media";
-    } else if (danniEffettivi >= lieveMax) {
+    } else if (dannoTotale >= soglie[1]) {
         statoFerita = "Lieve";
     } else {
-        statoFerita = "Nessuna Ferita";
+        statoFerita = "Nessuna Ferita"; // Se non ha subito danni significativi
     }
 
     // Aggiorna il testo dello stato nella tabella
