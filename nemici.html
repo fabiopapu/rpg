@@ -205,7 +205,8 @@
                         const laceranteMax = lieveMax * 3;
                         const profondaMax = lieveMax * 4;
                         const criticaMax = lieveMax * 5;
-                        const morteSoglia = indice * 10;  // Soglia per "Morte"
+const criticaMax = lieveMax * 6;
+                        const morteSoglia = indice * 7;  // Soglia per "Morte"
 
                         // Determinazione dello stato
                         if (danniEffettivi >= morteSoglia) {
@@ -223,6 +224,10 @@
                         } else {
                             statoFerita = "Grave";  // Stato Grave se i danni sono maggiori della soglia di Critica
                         }
+                         } else {
+                            statoFerita = "Morte";  // Stato Grave se i danni sono maggiori della soglia di Critica
+                        }
+
 
                         // Aggiorna il testo dello stato nella tabella
                         document.getElementById(`stato_${id}`).innerText = statoFerita;
