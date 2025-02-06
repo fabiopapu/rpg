@@ -200,45 +200,38 @@
     const danniEffettivi = Math.max(danno - protezione, 0);  // Calcolo danno effettivo dopo la protezione
 
     let statoFerita = "";
-    
-    // Danno totale accumulato
-    let dannoTotale = danniEffettivi;  // Se il PG ha già danni, somma quelli
 
-    // Calcolo lo stato basato sul numero di danni e sull'indice
-    let statoIndex = Math.floor(dannoTotale / indice); // Determina in quale stato il PG è
-    statoIndex = Math.min(statoIndex, 6); // Assicurati che lo stato non vada oltre il massimo (6)
+    // Calcola il danno totale accumulato
+    let dannoTotale = danniEffettivi;
 
-    // Assegna lo stato in base allo statoIndex
-    switch (statoIndex) {
-        case 0:
-            statoFerita = "Lieve"; // Meno di indice danni
-            break;
-        case 1:
-            statoFerita = "Media"; // Da indice a 2 volte l'indice danni
-            break;
-        case 2:
-            statoFerita = "Lacerante"; // Da 2 volte l'indice a 3 volte l'indice danni
-            break;
-        case 3:
-            statoFerita = "Profonda"; // Da 3 volte l'indice a 4 volte l'indice danni
-            break;
-        case 4:
-            statoFerita = "Critica"; // Da 4 volte l'indice a 5 volte l'indice danni
-            break;
-        case 5:
-            statoFerita = "Grave"; // Da 5 volte l'indice a 6 volte l'indice danni
-            break;
-        case 6:
-            statoFerita = "Morte"; // Più di 6 volte l'indice danni
-            break;
-        default:
-            statoFerita = "Lieve"; // Default, nel caso non rientri in nessun intervallo
-            break;
+    // Determina lo stato in base all'indice di ferite
+    const soglie = [];
+
+    for (let i = 1; i <= 7; i++) {
+        soglie.push(indice * i);
+    }
+
+    // Determina lo stato in base al danno accumulato
+    if (dannoTotale < soglie[0]) {
+        statoFerita = "Lieve"; // Se i danni sono inferiori alla prima soglia
+    } else if (dannoTotale < soglie[1]) {
+        statoFerita = "Media"; // Se i danni sono tra la prima e la seconda soglia
+    } else if (dannoTotale < soglie[2]) {
+        statoFerita = "Lacerante";
+    } else if (dannoTotale < soglie[3]) {
+        statoFerita = "Profonda";
+    } else if (dannoTotale < soglie[4]) {
+        statoFerita = "Critica";
+    } else if (dannoTotale < soglie[5]) {
+        statoFerita = "Grave";
+    } else {
+        statoFerita = "Morte"; // Se i danni superano la sesta soglia
     }
 
     // Aggiorna il testo dello stato nella tabella
     document.getElementById(`stato_${id}`).innerText = statoFerita;
 }
+
 
 
 
