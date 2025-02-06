@@ -192,7 +192,7 @@
                         }
                     }
 
-        function aggiornaStatoNemico(id) {
+ function aggiornaStatoNemico(id) {
     const nome = document.getElementById(`nome_${id}`).value;
     const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1; // Indice Ferite
     const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
@@ -204,28 +204,26 @@
     // Calcola il danno totale accumulato
     let dannoTotale = danniEffettivi;
 
-    // Determina lo stato in base all'indice di ferite
-    const soglie = [];
-
-    for (let i = 1; i <= 7; i++) {
-        soglie.push(indice * i);
-    }
+    // Determina la soglia per il passaggio tra gli stati
+    const sogliaLieve = indice;                // Passa da "Lieve" a "Media" quando il danno totale raggiunge l'indice
+    const sogliaMedia = indice + 1;            // Passa da "Media" a "Lacerante" quando il danno totale è maggiore di indice + 1
+    const sogliaLacerante = indice + 2;        // E così via...
 
     // Determina lo stato in base al danno accumulato
-    if (dannoTotale < soglie[0]) {
-        statoFerita = "Lieve"; // Se i danni sono inferiori alla prima soglia
-    } else if (dannoTotale < soglie[1]) {
+    if (dannoTotale < sogliaLieve) {
+        statoFerita = "Lieve"; // Se i danni sono inferiori alla soglia
+    } else if (dannoTotale < sogliaMedia) {
         statoFerita = "Media"; // Se i danni sono tra la prima e la seconda soglia
-    } else if (dannoTotale < soglie[2]) {
+    } else if (dannoTotale < sogliaLacerante) {
         statoFerita = "Lacerante";
-    } else if (dannoTotale < soglie[3]) {
+    } else if (dannoTotale < sogliaLacerante + 1) {
         statoFerita = "Profonda";
-    } else if (dannoTotale < soglie[4]) {
+    } else if (dannoTotale < sogliaLacerante + 2) {
         statoFerita = "Critica";
-    } else if (dannoTotale < soglie[5]) {
+    } else if (dannoTotale < sogliaLacerante + 3) {
         statoFerita = "Grave";
     } else {
-        statoFerita = "Morte"; // Se i danni superano la sesta soglia
+        statoFerita = "Morte"; // Se i danni superano tutte le soglie
     }
 
     // Aggiorna il testo dello stato nella tabella
