@@ -192,46 +192,43 @@
                         }
                     }
 
-                    function aggiornaStatoNemico(id) {
-                        const nome = document.getElementById(`nome_${id}`).value;
-                        const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
-                        const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
-                        const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
-                        const danniEffettivi = Math.max(danno - protezione, 0);
+                   function aggiornaStatoNemico(id) {
+    const nome = document.getElementById(`nome_${id}`).value;
+    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
+    const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
+    const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
+    const danniEffettivi = Math.max(danno - protezione, 0);
 
-                        let statoFerita = "";
-                        const lieveMax = indice;
-                        const mediaMax = lieveMax * 2;
-                        const laceranteMax = lieveMax * 3;
-                        const profondaMax = lieveMax * 4;
-                        const criticaMax = lieveMax * 5;
-const criticaMax = lieveMax * 6;
-                        const morteSoglia = indice * 7;  // Soglia per "Morte"
+    let statoFerita = "";
+    const lieveMax = indice;
+    const mediaMax = lieveMax * 2;
+    const laceranteMax = lieveMax * 3;
+    const profondaMax = lieveMax * 4;
+    const criticaMax = lieveMax * 5;
+    const graveMax = criticaMax * 2;  // Aggiungi una soglia per Grave
+    const morteSoglia = graveMax * 2;  // Soglia per "Morte"
 
-                        // Determinazione dello stato
-                        if (danniEffettivi >= morteSoglia) {
-                            statoFerita = "Morte";  // Stato Morte aggiunto qui
-                        } else if (danniEffettivi <= lieveMax) {
-                            statoFerita = "Lieve";
-                        } else if (danniEffettivi <= mediaMax) {
-                            statoFerita = "Media";
-                        } else if (danniEffettivi <= laceranteMax) {
-                            statoFerita = "Lacerante";
-                        } else if (danniEffettivi <= profondaMax) {
-                            statoFerita = "Profonda";
-                        } else if (danniEffettivi <= criticaMax) {
-                            statoFerita = "Critica";
-                        } else {
-                            statoFerita = "Grave";  // Stato Grave se i danni sono maggiori della soglia di Critica
-                        }
-                         } else {
-                            statoFerita = "Morte";  // Stato Grave se i danni sono maggiori della soglia di Critica
-                        }
+    // Determinazione dello stato
+    if (danniEffettivi >= morteSoglia) {
+        statoFerita = "Morte";  // Stato Morte se i danni superano la soglia di Morte
+    } else if (danniEffettivi >= graveMax) {
+        statoFerita = "Grave";  // Stato Grave se i danni sono oltre la soglia di Critica
+    } else if (danniEffettivi <= lieveMax) {
+        statoFerita = "Lieve";
+    } else if (danniEffettivi <= mediaMax) {
+        statoFerita = "Media";
+    } else if (danniEffettivi <= laceranteMax) {
+        statoFerita = "Lacerante";
+    } else if (danniEffettivi <= profondaMax) {
+        statoFerita = "Profonda";
+    } else if (danniEffettivi <= criticaMax) {
+        statoFerita = "Critica";
+    }
 
+    // Aggiorna il testo dello stato nella tabella
+    document.getElementById(`stato_${id}`).innerText = statoFerita;
+}
 
-                        // Aggiorna il testo dello stato nella tabella
-                        document.getElementById(`stato_${id}`).innerText = statoFerita;
-                    }
 
                     creaTabellaNemici();
                 </script>
