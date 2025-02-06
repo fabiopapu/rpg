@@ -192,51 +192,54 @@
                         }
                     }
 
-          function aggiornaStatoNemico(id) {
+        function aggiornaStatoNemico(id) {
     const nome = document.getElementById(`nome_${id}`).value;
-    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1;
+    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1; // Indice Ferite
     const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
     const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
-    const danniEffettivi = Math.max(danno - protezione, 0);
+    const danniEffettivi = Math.max(danno - protezione, 0);  // Calcolo danno effettivo dopo la protezione
 
     let statoFerita = "";
     
-    // Definisci le soglie per ogni stato
-    const soglie = {
-        1: 0,      // Nessuna ferita
-        2: 10,     // Lieve
-        3: 20,     // Media
-        4: 30,     // Lacerante
-        5: 40,     // Profonda
-        6: 50,     // Critica
-        7: 60      // Grave
-    };
-    
-    // Calcola il danno totale accumulato
+    // Danno totale accumulato
     let dannoTotale = danniEffettivi;  // Se il PG ha già danni, somma quelli
 
-    // Determina lo stato di ferita in base al danno accumulato
-    if (dannoTotale >= soglie[7]) {
-        statoFerita = "Morte";  // Se il danno supera la soglia per la morte
-    } else if (dannoTotale >= soglie[6]) {
-        statoFerita = "Grave";  
-    } else if (dannoTotale >= soglie[5]) {
-        statoFerita = "Critica";
-    } else if (dannoTotale >= soglie[4]) {
-        statoFerita = "Profonda";
-    } else if (dannoTotale >= soglie[3]) {
-        statoFerita = "Lacerante";
-    } else if (dannoTotale >= soglie[2]) {
-        statoFerita = "Media";
-    } else if (dannoTotale >= soglie[1]) {
-        statoFerita = "Lieve";
-    } else {
-        statoFerita = "Nessuna Ferita"; // Se non ha subito danni significativi
+    // Calcolo lo stato basato sul numero di danni e sull'indice
+    let statoIndex = Math.floor(dannoTotale / indice); // Determina in quale stato il PG è
+    statoIndex = Math.min(statoIndex, 6); // Assicurati che lo stato non vada oltre il massimo (6)
+
+    // Assegna lo stato in base allo statoIndex
+    switch (statoIndex) {
+        case 0:
+            statoFerita = "Lieve"; // Meno di indice danni
+            break;
+        case 1:
+            statoFerita = "Media"; // Da indice a 2 volte l'indice danni
+            break;
+        case 2:
+            statoFerita = "Lacerante"; // Da 2 volte l'indice a 3 volte l'indice danni
+            break;
+        case 3:
+            statoFerita = "Profonda"; // Da 3 volte l'indice a 4 volte l'indice danni
+            break;
+        case 4:
+            statoFerita = "Critica"; // Da 4 volte l'indice a 5 volte l'indice danni
+            break;
+        case 5:
+            statoFerita = "Grave"; // Da 5 volte l'indice a 6 volte l'indice danni
+            break;
+        case 6:
+            statoFerita = "Morte"; // Più di 6 volte l'indice danni
+            break;
+        default:
+            statoFerita = "Lieve"; // Default, nel caso non rientri in nessun intervallo
+            break;
     }
 
     // Aggiorna il testo dello stato nella tabella
     document.getElementById(`stato_${id}`).innerText = statoFerita;
 }
+
 
 
 
