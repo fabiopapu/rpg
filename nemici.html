@@ -177,58 +177,76 @@
             <tbody>
                 <!-- Aggiungeremo dinamicamente le righe per i nemici -->
                 <script>
-                    function creaTabellaNemici() {
-                        const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
-                        for (let i = 1; i <= 15; i++) {
-                            let nuovaRiga = tabella.insertRow();
-                            nuovaRiga.innerHTML = `  
-                                <td>Nemico ${i}</td>
-                                <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
-                                <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice" min="1" max="10"></td>
-                                <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
-                                <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
-                                <td><span id="stato_${i}"></span></td>
-                            `;
-                        }
+                 <div class="table-container">
+    <table id="tabella_ferite">
+        <thead>
+            <tr>
+                <th>Nemico</th>
+                <th>Nome Nemico</th>
+                <th>Indice Ferite</th>
+                <th>Danni</th>
+                <th>Protezione</th>
+                <th>Stato della Ferita</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script>
+                function creaTabellaNemici() {
+                    const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
+                    for (let i = 1; i <= 15; i++) {
+                        let nuovaRiga = tabella.insertRow();
+                        nuovaRiga.innerHTML = `  
+                            <td>Nemico ${i}</td>
+                            <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
+                            <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice Ferite" min="1" max="10"></td>
+                            <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
+                            <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
+                            <td><span id="stato_${i}"></span></td>
+                        `;
+                    }
+                }
+
+                function aggiornaStatoNemico(id) {
+                    const nome = document.getElementById(`nome_${id}`).value;
+                    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1; // Indice variabile
+                    const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
+                    const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
+                    const danniEffettivi = Math.max(danno - protezione, 0); // Calcolo danni effettivi
+
+                    let statoFerita = "";
+
+                    // Definisci le soglie per ogni stato
+                    const soglie = [
+                        { soglia: 0, stato: "Nessuna Ferita" },  // Nessuna ferita
+                        { soglia: 2, stato: "Lieve" },          // Lieve
+                        { soglia: 4, stato: "Media" },          // Media
+                        { soglia: 6, stato: "Lacerante" },      // Lacerante
+                        { soglia: 8, stato: "Profonda" },       // Profonda
+                        { soglia: 10, stato: "Critica" },       // Critica
+                        { soglia: 12, stato: "Grave" }          // Grave
+                    ];
+
+                    // Calcola il danno totale accumulato
+                    let dannoTotale = danniEffettivi;  // Se il PG ha già danni, somma quelli
+
+                    // Determina lo stato di ferita in base all'indice
+                    const cambioStato = Math.floor(dannoTotale / indice);  // Passa da uno stato all'altro in base all'indice
+                    if (cambioStato < soglie.length) {
+                        statoFerita = soglie[cambioStato].stato;
+                    } else {
+                        statoFerita = soglie[soglie.length - 1].stato; // Se supera la soglia, diventa "Grave" o "Morte"
                     }
 
- function aggiornaStatoNemico(id) {
-    const nome = document.getElementById(`nome_${id}`).value;
-    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1; // Indice Ferite
-    const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
-    const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
-    const danniEffettivi = Math.max(danno - protezione, 0);  // Calcolo danno effettivo dopo la protezione
+                    // Aggiorna il testo dello stato nella tabella
+                    document.getElementById(`stato_${id}`).innerText = statoFerita;
+                }
 
-    let statoFerita = "";
+                creaTabellaNemici();
+            </script>
+        </tbody>
+    </table>
+</div>
 
-    // Calcola il danno totale accumulato
-    let dannoTotale = danniEffettivi;
-
-    // Determina la soglia per il passaggio tra gli stati
-    const sogliaLieve = indice;                // Passa da "Lieve" a "Media" quando il danno totale raggiunge l'indice
-    const sogliaMedia = indice + 1;            // Passa da "Media" a "Lacerante" quando il danno totale è maggiore di indice + 1
-    const sogliaLacerante = indice + 2;        // E così via...
-
-    // Determina lo stato in base al danno accumulato
-    if (dannoTotale < sogliaLieve) {
-        statoFerita = "Lieve"; // Se i danni sono inferiori alla soglia
-    } else if (dannoTotale < sogliaMedia) {
-        statoFerita = "Media"; // Se i danni sono tra la prima e la seconda soglia
-    } else if (dannoTotale < sogliaLacerante) {
-        statoFerita = "Lacerante";
-    } else if (dannoTotale < sogliaLacerante + 1) {
-        statoFerita = "Profonda";
-    } else if (dannoTotale < sogliaLacerante + 2) {
-        statoFerita = "Critica";
-    } else if (dannoTotale < sogliaLacerante + 3) {
-        statoFerita = "Grave";
-    } else {
-        statoFerita = "Morte"; // Se i danni superano tutte le soglie
-    }
-
-    // Aggiorna il testo dello stato nella tabella
-    document.getElementById(`stato_${id}`).innerText = statoFerita;
-}
 
 
 
