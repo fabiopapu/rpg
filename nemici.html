@@ -4,685 +4,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcolatore Dadi e MS-MI</title>
+    <title>Lancio Dadi con Bonus Armatura</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f5;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        h1, h2 {
+            background-color: #333;
+            color: black;
             text-align: center;
-            color: #333333;
         }
-
-        h1 {
-            margin-bottom: 20px;
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
         }
-
-        label {
-            font-size: 16px;
-            color: #555555;
-        }
-
         .form-group {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
+            margin: 20px 0;
         }
-
-        input, button {
-            font-size: 16px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        .form-group input {
+            padding: 5px;
+            width: 250px;
         }
-
-        input:focus {
-            outline: none;
-            border-color: #007BFF;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-
-        button {
-            background-color: #007BFF;
-            color: #ffffff;
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #444;
             border: none;
+            color: black;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-
-        button:hover {
-            background-color: #0056b3;
+        .form-group button:hover {
+            background-color: #666;
         }
-
-        .results {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .results p {
-            font-size: 18px;
-            color: #333333;
-            margin: 5px 0;
-        }
-
         .result {
-            font-size: 1.5em;
+            margin-top: 20px;
         }
-
-        section {
-            margin-bottom: 30px;
-        }
-
-        /* Centralizza la tabella dei nemici */
-        .table-container {
+        .dice-result {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-top: 40px;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
-
-        table {
-            width: 100%;
-            max-width: 800px;
-            border-collapse: collapse;
-        }
-
-        th, td {
+        .dice {
+            background-color: #444;
             padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            width: 50px;
             text-align: center;
-            border: 1px solid #ddd;
+            font-weight: bold;
         }
-
-        th {
-            background-color: #007BFF;
+        .ms-result {
+            margin-top: 20px;
+            background-color: #555;
+            padding: 10px;
+            border-radius: 5px;
             color: white;
-        }
-
-        td input {
-            width: 100%;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .column {
-            width: 48%;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Calcolatore Dadi & MS-MI</h1>
+        <h1>Lancio Dadi d10 con Bonus Armatura</h1>
 
-        <div class="row">
-            <div class="column">
-                <section>
-                    <h2>Lancio Dadi e MS-MI</h2>
-                    <div class="form-group">
-                        <label for="diceExpression">Espressione Dadi (es. 1d12+2d6):</label>
-                        <input type="text" id="diceExpression" placeholder="Inserisci l'espressione del lancio">
-                    </div>
-                    <button onclick="rollDiceAndCalculateMS()">Lancia i Dadi e Calcola MS</button>
-                </section>
-            </div>
-
-            <div class="column">
-                <section>
-                    <h2>Calcolo Danno</h2>
-                    <div class="form-group">
-                        <label for="armorModifier">Modificatore Armatura (+1, +2, ecc.):</label>
-                        <input type="number" id="armorModifier" value="0">
-                    </div>
-                    <button onclick="calculateDamage()">Calcola Danno</button>
-                </section>
-            </div>
+        <div class="form-group">
+            <label for="diceExpression">Espressione Dadi (es. 1d10+3):</label>
+            <input type="text" id="diceExpression" placeholder="Inserisci espressione dei dadi">
+        </div>
+        <div class="form-group">
+            <label for="armorBonus">Bonus Armatura (es. +1, +2, +3):</label>
+            <input type="number" id="armorBonus" value="0">
         </div>
 
-        <div class="results" id="results"></div>
-    </div>
+        <div class="form-group">
+            <button onclick="rollD10AndCalculateDamage()">Lancia Dadi e Calcola Danno</button>
+        </div>
 
-    <div class="table-container">
-        <table id="tabella_ferite">
-            <thead>
-                <tr>
-                    <th>Nemico</th>
-                    <th>Nome Nemico</th>
-                    <th>Indice Ferite</th>
-                    <th>Danni</th>
-                    <th>Protezione</th>
-                    <th>Stato della Ferita</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aggiungeremo dinamicamente le righe per i nemici -->
-                <script>
-                 <div class="table-container">
-    <table id="tabella_ferite">
-        <thead>
-            <tr>
-                <th>Nemico</th>
-                <th>Nome Nemico</th>
-                <th>Indice Ferite</th>
-                <th>Danni</th>
-                <th>Protezione</th>
-                <th>Stato della Ferita</th>
-            </tr>
-        </thead>
-        <tbody>
-            <script>
-                function creaTabellaNemici() {
-                    const tabella = document.getElementById("tabella_ferite").getElementsByTagName('tbody')[0];
-                    for (let i = 1; i <= 15; i++) {
-                        let nuovaRiga = tabella.insertRow();
-                        nuovaRiga.innerHTML = `  
-                            <td>Nemico ${i}</td>
-                            <td><input type="text" id="nome_${i}" class="nome_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Nome Nemico ${i}"></td>
-                            <td><input type="number" id="indice_${i}" class="indice_ferite_nemico" onchange="aggiornaStatoNemico(${i})" placeholder="Indice Ferite" min="1" max="10"></td>
-                            <td><input type="number" id="danno_${i}" class="danno" onchange="aggiornaStatoNemico(${i})"></td>
-                            <td><input type="number" id="protezione_${i}" class="protezione" onchange="aggiornaStatoNemico(${i})"></td>
-                            <td><span id="stato_${i}"></span></td>
-                        `;
-                    }
-                }
-
-                function aggiornaStatoNemico(id) {
-                    const nome = document.getElementById(`nome_${id}`).value;
-                    const indice = parseInt(document.getElementById(`indice_${id}`).value) || 1; // Indice variabile
-                    const danno = parseInt(document.getElementById(`danno_${id}`).value) || 0;
-                    const protezione = parseInt(document.getElementById(`protezione_${id}`).value) || 0;
-                    const danniEffettivi = Math.max(danno - protezione, 0); // Calcolo danni effettivi
-
-                    let statoFerita = "";
-
-                    // Definisci le soglie per ogni stato
-                    const soglie = [
-                        { soglia: 0, stato: "Nessuna Ferita" },  // Nessuna ferita
-                        { soglia: 2, stato: "Lieve" },          // Lieve
-                        { soglia: 4, stato: "Media" },          // Media
-                        { soglia: 6, stato: "Lacerante" },      // Lacerante
-                        { soglia: 8, stato: "Profonda" },       // Profonda
-                        { soglia: 10, stato: "Critica" },       // Critica
-                        { soglia: 12, stato: "Grave" }          // Grave
-                    ];
-
-                    // Calcola il danno totale accumulato
-                    let dannoTotale = danniEffettivi;  // Se il PG ha già danni, somma quelli
-
-                    // Determina lo stato di ferita in base all'indice
-                    const cambioStato = Math.floor(dannoTotale / indice);  // Passa da uno stato all'altro in base all'indice
-                    if (cambioStato < soglie.length) {
-                        statoFerita = soglie[cambioStato].stato;
-                    } else {
-                        statoFerita = soglie[soglie.length - 1].stato; // Se supera la soglia, diventa "Grave" o "Morte"
-                    }
-
-                    // Aggiorna il testo dello stato nella tabella
-                    document.getElementById(`stato_${id}`).innerText = statoFerita;
-                }
-
-                creaTabellaNemici();
-            </script>
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-
-                    creaTabellaNemici();
-                </script>
-            </tbody>
-        </table>
+        <div class="result" id="results"></div>
     </div>
 
     <script>
-        // Funzione che elabora l'espressione dei dadi
-        function parseDiceExpression(expression) {
-            const regex = /(\d*)d(\d+)|([+-]\d+)/g;
-            let match;
-            const rolls = [];
-            let totalBonus = 0;
+        function rollD10AndCalculateDamage() {
+            const expression = document.getElementById("diceExpression").value.trim();
+            const armorBonus = parseInt(document.getElementById("armorBonus").value, 10) || 0;
+            const result = rollD10(expression);
 
-            while ((match = regex.exec(expression)) !== null) {
-                if (match[1] && match[2]) {
-                    // Tiro di dadi, es. 2d6
-                    let count = match[1] ? parseInt(match[1]) : 1;
-                    let sides = parseInt(match[2]);
-                    rolls.push({ count, sides });
-                } else if (match[3]) {
-                    // Bonus o malus, es. +3 o -2
-                    totalBonus += parseInt(match[3]);
-                }
-            }
+            let damageTotal = 0;
+            let damageDetails = [];
 
-            return { rolls, totalBonus };
-        }
-
-       // Funzione che esegue il lancio dei dadi e calcola MS
-        function rollDiceAndCalculateMS() {
-            const expression = document.getElementById('diceExpression').value;
-            let total = 0;
-            let individualRolls = [];
-
-            // Elabora l'espressione dei dadi
-            const { rolls, totalBonus } = parseDiceExpression(expression);
-
-            rolls.forEach(({ count, sides }) => {
-                let diceRolls = [];
-                for (let i = 0; i < count; i++) {
-                    const roll = Math.floor(Math.random() * sides) + 1;
-                    diceRolls.push(roll);
-                    total += roll;
-                }
-                individualRolls.push({ sides, rolls: diceRolls });
+            result.forEach(die => {
+                let damage = calculateDamage(die, armorBonus);
+                damageDetails.push({ die, damage });
+                damageTotal += damage;
             });
-
-            total += totalBonus;
-
-            // Calcola MS/MI in base al risultato totale
-            let ms = 0;
-            let risultato = '';
-            if (total <= 5) {
-                ms = 5 - total;
-                risultato = `Margine di Successo: ${ms}`;
-            } else {
-                ms = total - 5;
-                risultato = `Margine di Insuccesso: ${ms}`;
-            }
-
-            // Determina il numero di dadi da tirare in base al margine
-            let dadi = '';
-            if (ms <= 2) {
-                dadi = 'Tira 1D10';
-            } else if (ms <= 4) {
-                dadi = 'Tira 2D10';
-            } else if (ms <= 6) {
-                dadi = 'Tira 3D10';
-            } else if (ms <= 8) {
-                dadi = 'Tira 4D10';
-            } else if (ms <= 10) {
-                dadi = 'Tira 5D10';
-            } else if (ms <= 12) {
-                dadi = 'Tira 6D10';
-            } else {
-                dadi = 'Tira 6D10 o più';
-            }
 
             // Mostra i risultati
-            let rollsDetails = individualRolls
-                .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
-                .join('<br>');
+            let diceResultsHtml = damageDetails.map(detail => {
+                return `<div class="dice">Dado: ${detail.die} - Danno: ${detail.damage}</div>`;
+            }).join('');
 
-            document.getElementById('results').innerHTML = `
-                <h3>Risultati Lancio Dadi e Calcolo MS</h3>
-                <p>Espressione Dadi: ${expression}</p>
-                <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
-                <p>Bonus/Malus: ${totalBonus}</p>
-                <p>Totale (incluso bonus/malus): ${total}</p>
-                <p>${risultato}</p>
-                <p>${dadi}</p>
+            document.getElementById("results").innerHTML = `
+                <p><strong>Risultato dei Dadi:</strong></p>
+                <div class="dice-result">
+                    ${diceResultsHtml}
+                </div>
+                <p><strong>Totale Danno:</strong> ${damageTotal}</p>
             `;
         }
 
-
-  // Funzione per calcolare i danni
-        function calculateDamage() {
-            const expression = document.getElementById('diceExpression').value;
-            const armorModifier = parseInt(document.getElementById('armorModifier').value);
-            const { rolls, totalBonus } = parseDiceExpression(expression);
-            let individualRolls = [];
-            let damage = 0;
-
-            rolls.forEach(({ count, sides }) => {
-                let diceRolls = [];
-                for (let i = 0; i < count; i++) {
-                    const roll = Math.floor(Math.random() * sides) + 1;
-                    diceRolls.push(roll);
-                    
-                    let adjustedRoll = roll;
-
-                    if (sides === 10 && roll === 10) {
-                        damage += 2;
-                    } else {
-                        if (roll >= (5 + armorModifier)) {
-                            damage++;
-                        }
+        function rollD10(expression) {
+            const diceParts = expression.split('+');
+            const rolls = [];
+            
+            diceParts.forEach(part => {
+                const match = part.match(/(\d*)d(\d+)/);
+                if (match) {
+                    const numDice = match[1] ? parseInt(match[1], 10) : 1;
+                    const numSides = parseInt(match[2], 10);
+                    for (let i = 0; i < numDice; i++) {
+                        rolls.push(getRandomInt(1, numSides)); // Tira il dado
                     }
-                }
-                individualRolls.push({ sides, rolls: diceRolls });
-            });
-
-            let rollsDetails = individualRolls
-                .map(d => `D${d.sides} Tiri: ${d.rolls.join(', ')}`)
-                .join('<br>');
-
-            document.getElementById('results').innerHTML = `
-                <h3>Risultati Calcolo Danno</h3>
-                <p>Espressione: ${expression}</p>
-                <p>Dettaglio Tiri per Tipo Dado:<br>${rollsDetails}</p>
-                <p>Modificatore Armatura: ${armorModifier}</p>
-                <p>Bonus/Malus: ${totalBonus}</p>
-                <p>Danno Inflitto: ${damage}</p>
-            `;
-        }
-
- // Funzione per salvare i dati in localStorage
-    function salvaDati() {
-        const nemici = [];
-        const numNemici = 15; // Numero massimo di nemici nella tabella
-        for (let i = 1; i <= numNemici; i++) {
-            const nome = document.getElementById(`nome_${i}`).value || "";
-            const indice = document.getElementById(`indice_${i}`).value || "";
-            const danno = document.getElementById(`danno_${i}`).value || "";
-            const protezione = document.getElementById(`protezione_${i}`).value || "";
-            nemici.push({ nome, indice, danno, protezione });
-        }
-
-        const dati = {
-            diceExpression: document.getElementById('diceExpression').value || "",
-            armorModifier: document.getElementById('armorModifier').value || 0,
-            nemici,
-        };
-
-        localStorage.setItem("datiBackup", JSON.stringify(dati));
-    }
-
-    // Funzione per ripristinare i dati da localStorage
-    function ripristinaDati() {
-        const datiSalvati = localStorage.getItem("datiBackup");
-        if (datiSalvati) {
-            const dati = JSON.parse(datiSalvati);
-            document.getElementById('diceExpression').value = dati.diceExpression || "";
-            document.getElementById('armorModifier').value = dati.armorModifier || 0;
-
-            dati.nemici.forEach((nemico, index) => {
-                const i = index + 1; // Indice parte da 1
-                if (nemico) {
-                    document.getElementById(`nome_${i}`).value = nemico.nome || "";
-                    document.getElementById(`indice_${i}`).value = nemico.indice || "";
-                    document.getElementById(`danno_${i}`).value = nemico.danno || "";
-                    document.getElementById(`protezione_${i}`).value = nemico.protezione || "";
-                    aggiornaStatoNemico(i);
+                } else {
+                    rolls.push(parseInt(part)); // Valore costante (es. bonus armatura)
                 }
             });
-        }
-    }
 
-    // Salva i dati automaticamente prima di ricaricare o chiudere la pagina
-    window.addEventListener("beforeunload", salvaDati);
-
-    // Ripristina i dati al caricamento della pagina
-    window.addEventListener("load", ripristinaDati);
-
-// Funzione per salvare i dati in un file JSON
-    function salvaInFile() {
-        const nemici = [];
-        const numNemici = 15; // Numero massimo di nemici nella tabella
-        for (let i = 1; i <= numNemici; i++) {
-            const nome = document.getElementById(`nome_${i}`).value || "";
-            const indice = document.getElementById(`indice_${i}`).value || "";
-            const danno = document.getElementById(`danno_${i}`).value || "";
-            const protezione = document.getElementById(`protezione_${i}`).value || "";
-            nemici.push({ nome, indice, danno, protezione });
+            return rolls;
         }
 
-        const dati = {
-            diceExpression: document.getElementById('diceExpression').value || "",
-            armorModifier: document.getElementById('armorModifier').value || 0,
-            nemici,
-        };
-
-        const blob = new Blob([JSON.stringify(dati, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "dati_backup.json"; // Nome predefinito del file
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    // Funzione per caricare i dati da un file JSON
-    function caricaDaFile(event) {
-        const file = event.target.files[0];
-        if (!file) {
-            alert("Seleziona un file per caricare i dati!");
-            return;
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const dati = JSON.parse(e.target.result);
-
-                // Ripristina i campi salvati
-                document.getElementById('diceExpression').value = dati.diceExpression || "";
-                document.getElementById('armorModifier').value = dati.armorModifier || 0;
-
-                dati.nemici.forEach((nemico, index) => {
-                    const i = index + 1; // Indice parte da 1
-                    if (nemico) {
-                        document.getElementById(`nome_${i}`).value = nemico.nome || "";
-                        document.getElementById(`indice_${i}`).value = nemico.indice || "";
-                        document.getElementById(`danno_${i}`).value = nemico.danno || "";
-                        document.getElementById(`protezione_${i}`).value = nemico.protezione || "";
-                        aggiornaStatoNemico(i);
-                    }
-                });
-
-                alert("Dati caricati correttamente!");
-            } catch (error) {
-                alert("Errore durante il caricamento del file. Assicurati che sia un file JSON valido.");
+        function calculateDamage(dieResult, armorBonus) {
+            // Danno base con bonus armatura
+            const requiredResult = 5 + armorBonus; // Se armatura è +1, per fare danno devi ottenere almeno 6
+            if (dieResult >= requiredResult) {
+                // Se il dado è 10, danno doppio
+                return dieResult === 10 ? 2 : 1;
             }
-        };
-        reader.readAsText(file);
-    }
-
-    // Aggiunge i pulsanti al DOM
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.querySelector('.container');
-
-        // Crea il pulsante per salvare
-        const salvaBtn = document.createElement("button");
-        salvaBtn.innerText = "Salva in File";
-        salvaBtn.style.marginRight = "10px";
-        salvaBtn.onclick = salvaInFile;
-
-        // Crea l'input per caricare
-        const caricaInput = document.createElement("input");
-        caricaInput.type = "file";
-        caricaInput.accept = "application/json";
-        caricaInput.style.marginRight = "10px";
-        caricaInput.onchange = caricaDaFile;
-
-        // Crea una descrizione per il caricamento
-        const caricaLabel = document.createElement("label");
-        caricaLabel.innerText = "Carica File:";
-        caricaLabel.style.marginRight = "10px";
-
-        // Aggiungi tutto al contenitore
-        const controls = document.createElement("div");
-        controls.style.marginTop = "20px";
-        controls.appendChild(salvaBtn);
-        controls.appendChild(caricaLabel);
-        controls.appendChild(caricaInput);
-
-        container.appendChild(controls);
-    });
+            return 0; // Nessun danno se il dado non supera la soglia
+        }
     </script>
-
 </body>
 </html>
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popup Scorrevole a Destra</title>
+    <title>Tabella Ferite - Salvataggio e Backup</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 20px;
+            background-color: #f4f4f4;
         }
-
-        button {
-            font-size: 18px;
-            padding: 10px 20px;
-            color: #fff;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
         .container {
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        /* Finestra scorrevole */
-        .slide-popup {
-            position: fixed;
-            top: 0;
-            right: -100%; /* Nascondi fuori dalla finestra */
-            width: 100%;
-            max-width: 1000px; /* Larghezza finestra */
-            height: 100%;
-            background-color: white;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transition: right 0.5s ease;
-            overflow: hidden;
-        }
-
-        /* Finestra visibile */
-        .slide-popup.active {
-            right: 0; /* Mostra finestra */
-        }
-
-        .slide-popup header {
-            background: #007BFF;
-            color: white;
-            padding: 10px 20px;
-            font-size: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-btn {
-            background: none;
-            color: white;
-            font-size: 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .close-btn:hover {
-            opacity: 0.8;
-        }
-
-        .slide-popup-content {
+            width: 80%;
+            margin: auto;
+            background: white;
             padding: 20px;
-            overflow-y: auto;
-            height: calc(100% - 60px); /* Rimuovi l'altezza dell'header */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
-
-        /* Freccia che apre la finestra scorrevole */
-        .open-slide-btn {
-            position: fixed;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            padding: 15px;
-            background-color: #007BFF;
+        .tabella-ferite {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: white;
+        }
+        input {
+            width: 80%;
+            padding: 5px;
+            text-align: center;
+        }
+        .stato-ferita {
+            font-weight: bold;
+            color: red;
+        }
+        .button {
+            padding: 10px 15px;
+            margin-top: 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 18px;
-            z-index: 1100;
-            border-radius: 50%;
+            font-size: 16px;
         }
-
-        .open-slide-btn:hover {
-            background-color: #0056b3;
+        .button:hover {
+            background-color: #45a049;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Popup Scorrevole a Destra</h1>
-        <p>Clicca sul pulsante per aprire la pagina esterna come una finestra che scorre da destra.</p>
-    </div>
+<div class="container">
+    <h2>Tabella Ferite</h2>
+    <div id="tabellaContainer"></div>
+    
+    <button class="button" onclick="salvaDatiLocalStorage()">Salva Dati</button>
+    <button class="button" onclick="scaricaBackup()">Scarica Backup</button>
+    <input type="file" class="button" onchange="caricaBackup(event)" />
+</div>
 
-    <!-- Bottone per aprire la finestra -->
-    <button class="open-slide-btn" onclick="apriPopup()">➔</button>
-
-    <!-- Popup scorrevole -->
-    <div id="slidePopup" class="slide-popup">
-        <header>
-            <span>Pagina Esterna</span>
-            <button class="close-btn" onclick="chiudiPopup()">✖</button>
-        </header>
-        <div class="slide-popup-content">
-            <iframe id="iframe-popup" src="" width="100%" height="100%" style="border: none;"></iframe>
-        </div>
-    </div>
-
-    <script>
-        // Funzione per aprire il popup
-        function apriPopup() {
-            const slidePopup = document.getElementById('slidePopup');
-            const iframe = document.getElementById('iframe-popup');
-            
-            // Imposta il link della pagina esterna da caricare
-            iframe.src = "https://fabiopapu.github.io/rpg/schedapg.html"; // Cambia con il percorso della tua pagina
-
-            // Mostra la finestra scorrevole
-            slidePopup.classList.add('active');
+<script>
+    // Funzione per creare le 12 tabelle
+    function creaTabelleFerite() {
+        const container = document.getElementById("tabellaContainer");
+        for (let i = 0; i < 12; i++) {
+            const tabella = document.createElement("table");
+            tabella.className = "tabella-ferite";
+            tabella.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Nome Nemico</th>
+                        <th>Indice Ferite</th>
+                        <th>Danni Subiti</th>
+                        <th>Stato Ferita</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" id="nomeNemico${i}" placeholder="Nome"></td>
+                        <td><input type="number" id="indiceFerite${i}" min="1" max="20" value="2" onchange="calcolaStato(${i})"></td>
+                        <td><input type="number" id="danniSubiti${i}" min="0" value="0" onchange="calcolaStato(${i})"></td>
+                        <td class="stato-ferita" id="statoFerita${i}">Lieve</td>
+                    </tr>
+                </tbody>
+            `;
+            container.appendChild(tabella);
         }
+        // Ricarica i dati salvati, se esistono
+        ripristinaDatiLocalStorage();
+    }
 
-        // Funzione per chiudere il popup
-        function chiudiPopup() {
-            const slidePopup = document.getElementById('slidePopup');
-            const iframe = document.getElementById('iframe-popup');
-            
-            // Nascondi la finestra scorrevole e rimuovi il contenuto (per motivi di prestazioni)
-            slidePopup.classList.remove('active');
-            iframe.src = ""; // Pulisce il contenuto dell'iframe
+    // Funzione per calcolare lo stato della ferita
+    function calcolaStato(id) {
+        const indice = parseInt(document.getElementById(`indiceFerite${id}`).value, 10) || 1;
+        const danni = parseInt(document.getElementById(`danniSubiti${id}`).value, 10) || 0;
+
+        // Array con gli stati della ferita
+        const statiFerita = ["Lieve", "Media", "Intensa", "Profonda", "Critica", "Grave", "Morte"];
+
+        // Calcola il livello di ferita basato sull'indice
+        let livello = Math.floor((danni - 1) / indice);
+        livello = Math.max(0, Math.min(livello, statiFerita.length - 1)); // Limita tra 0 e "Morte"
+
+        // Aggiorna la tabella con il nuovo stato
+        document.getElementById(`statoFerita${id}`).innerText = statiFerita[livello];
+
+        salvaDatiLocalStorage(); // Salva ogni volta che lo stato cambia
+    }
+
+    // Funzione per salvare i dati nel localStorage
+    function salvaDatiLocalStorage() {
+        const dati = [];
+        for (let i = 0; i < 12; i++) {
+            const nome = document.getElementById(`nomeNemico${i}`).value;
+            const indice = document.getElementById(`indiceFerite${i}`).value;
+            const danno = document.getElementById(`danniSubiti${i}`).value;
+            const stato = document.getElementById(`statoFerita${i}`).innerText;
+
+            dati.push({ nome, indice, danno, stato });
         }
-    </script>
+        localStorage.setItem("datiFerite", JSON.stringify(dati));
+    }
+
+    // Funzione per ripristinare i dati dal localStorage
+    function ripristinaDatiLocalStorage() {
+        const datiSalvati = JSON.parse(localStorage.getItem("datiFerite"));
+        if (datiSalvati) {
+            datiSalvati.forEach((dati, i) => {
+                document.getElementById(`nomeNemico${i}`).value = dati.nome;
+                document.getElementById(`indiceFerite${i}`).value = dati.indice;
+                document.getElementById(`danniSubiti${i}`).value = dati.danno;
+                document.getElementById(`statoFerita${i}`).innerText = dati.stato;
+            });
+        }
+    }
+
+    // Funzione per scaricare il backup dei dati
+    function scaricaBackup() {
+        const datiBackup = localStorage.getItem("datiFerite");
+        if (datiBackup) {
+            const blob = new Blob([datiBackup], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "backup_ferite.json";
+            link.click();
+        } else {
+            alert("Nessun dato salvato per il backup.");
+        }
+    }
+
+    // Funzione per caricare il backup da un file JSON
+    function caricaBackup(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const datiBackup = JSON.parse(e.target.result);
+            if (datiBackup) {
+                datiBackup.forEach((dati, i) => {
+                    document.getElementById(`nomeNemico${i}`).value = dati.nome;
+                    document.getElementById(`indiceFerite${i}`).value = dati.indice;
+                    document.getElementById(`danniSubiti${i}`).value = dati.danno;
+                    document.getElementById(`statoFerita${i}`).innerText = dati.stato;
+                });
+                alert("Backup caricato con successo.");
+                salvaDatiLocalStorage(); // Salva i dati appena caricati
+            } else {
+                alert("Errore nel caricare il file. Assicurati che sia un file JSON valido.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // Inizializza la pagina creando le tabelle
+    window.onload = creaTabelleFerite;
+</script>
+
+</body>
+</html>
+
+
+
 
 </body>
 </html>
