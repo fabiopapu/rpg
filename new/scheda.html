@@ -1,1 +1,986 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scheda PG – Fantasy Web</title>
+  <!-- Favicon scudo azzurro -->
+  <link rel="icon" href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="%237de3ff"/>
+      <stop offset="100%" stop-color="%2300a6cc"/>
+    </linearGradient></defs>
+    <path d="M32 4l22 8v16c0 14-11 24-22 28C21 52 10 42 10 28V12l22-8z"
+      fill="url(%23g)" stroke="%23006680" stroke-width="2"/>
+  </svg>'/>
+  <style>
+    :root{
+      --text:#f5e6c8; --ink:#2a1808;
+      --gold:#b88a4a; --gold2:#e4b96c;
+      --cyan:#7de3ff; --card:rgba(40,25,10,.86);
+      --ring:0 0 0 .15rem rgba(125,227,255,.35);
+    }
+    *{box-sizing:border-box;transition:all .3s ease}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Cinzel",ui-serif,Georgia,serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% -10%,rgba(60,45,25,.45),transparent 60%),
+        radial-gradient(900px 500px at 100% 0%,rgba(120,90,40,.35),transparent 70%),
+        radial-gradient(1200px 900px at 50% 120%,rgba(40,20,5,.65),#0b0906 70%);
+      background-attachment:fixed;
+    }
+    header{position:sticky;top:0;z-index:5;backdrop-filter:blur(6px);
+      background:rgba(20,10,5,.65);border-bottom:2px solid var(--gold)}
+    .wrap{max-width:1280px;margin:0 auto;padding:14px}
+    h1{margin:0;font-size:22px;color:var(--cyan)}
+    h3{margin:0 0 10px}
+    main{padding:14px;animation:fadeIn 1s ease}
+    .grid{display:grid;gap:14px}
+    @media(min-width:1024px){
+      .grid.cols-2{grid-template-columns:1.1fr 1.3fr}
+      .bottom-grid{grid-template-columns:1fr 1fr}
+    }
+    .card{
+      background:var(--card);border:2px solid var(--gold);
+      border-radius:18px;padding:14px;
+      box-shadow:0 14px 30px rgba(0,0,0,.45);
+      animation:fadeIn .6s ease;
+    }
+    .card:hover{transform:translateY(-2px);
+      box-shadow:0 18px 40px rgba(0,0,0,.55)}
+    .row{display:grid;grid-template-columns:140px 1fr;
+      gap:8px;align-items:center;margin:6px 0}
+    label{color:#f0d9abcc;font-size:13px}
+    input,select,textarea,button{font:inherit}
+    input[type=text],input[type=number],select,textarea{
+      width:100%;padding:8px 10px;border-radius:10px;
+      border:1px solid #8f6b3e;background:#120a04;
+      color:var(--text);outline:none
+    }
+    input:focus,select:focus,textarea:focus{
+      box-shadow:var(--ring);border-color:#4a90e2}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+    .btn{cursor:pointer;border:none;border-radius:10px;
+      padding:9px 12px;color:#140a05;font-weight:700;
+      transition:transform .2s ease}
+    .btn:hover{transform:scale(1.05)}
+    .btn-acc{background:var(--gold2)}
+    .btn-acc2{background:#ffd580}
+    .btn-cyan{background:var(--cyan)}
+    .btn-danger{background:#ff6b6b}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #8f6b3e;
+      padding:8px;text-align:left;font-size:14px}
+    th{background:rgba(60,30,10,.55);color:#ffe6b0}
+    .kpi{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .kpi .chip{background:#0d0702;border:1px solid #8f6b3e;
+      padding:6px 10px;border-radius:12px}
+    .right{margin-left:auto}
+    .footer-note{font-size:12px;color:#f3e2bf;opacity:.9}
+    dialog{border:none;border-radius:16px;padding:0;
+      max-width:900px;width:95%}
+    dialog::backdrop{background:rgba(0,0,0,.55)}
+    .modal{background:#0f0b06;color:var(--text);
+      border:2px solid var(--gold);border-radius:16px}
+    .modal header{position:sticky;top:0;background:#1a120a;
+      border-bottom:1px solid var(--gold);
+      border-radius:16px 16px 0 0}
+    .modal .content{padding:12px}
+    code{white-space:pre-wrap;word-break:break-word}
+    #background,#note{min-height:260px}
+    .bottom-grid{display:grid;gap:14px;margin-top:20px}
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    /* tabella oggetti */
+    #oggettiSearch{
+      width:100%;padding:8px 10px;border-radius:10px;
+      border:1px solid #8f6b3e;background:#120a04;
+      color:var(--text);outline:none;margin:10px 0
+    }
+    #oggettiTab th,#oggettiTab td{
+      border-bottom:1px solid #8f6b3e;
+      padding:8px;text-align:left;font-size:14px}
+    #oggettiTab tr{cursor:pointer}
+    #oggettiTab tr:hover{background:rgba(60,30,10,.35)}
+    .rowSel{background:rgba(125,227,255,.25)!important}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <h1>🛡️ Scheda PG – Fantasy Web</h1>
+    <span style="display:flex;gap:8px;align-items:center;background:rgba(13,7,2,.6);border:1px solid #8f6b3e;padding:6px 10px;border-radius:999px">
+      <span>Profilo</span>
+      <input id="saveName" placeholder="nome_scheda" style="width:170px">
+      <button class="btn btn-cyan" id="btnLoad">Carica</button>
+      <button class="btn btn-acc" id="btnSave">Salva</button>
+      <button class="btn btn-acc2" id="btnList">Elenco</button>
+      <button class="btn" id="btnPreview">Mostra JSON</button>
+      <button class="btn" id="btnExport">Esporta JSON</button>
+      <label class="btn btn-acc2" for="fileImport" style="cursor:pointer">Carica JSON</label>
+      <input id="fileImport" type="file" accept="application/json" style="display:none" />
+    </span>
+    <span class="right"></span>
+  </div>
+</header>
 
+<main class="wrap">
+  <div class="grid cols-2" style="margin-top:12px">
+    <!-- Colonna sinistra -->
+    <section class="card">
+      <h3>📇 Info Personaggio</h3>
+      <div id="info"></div>
+
+      <h3 style="margin-top:10px">💪 Caratteristiche</h3>
+      <div id="caratt"></div>
+      <div class="kpi" id="bonusKpi"></div>
+
+      <h3 style="margin-top:10px">🎒 Equipaggiamento</h3>
+      <div class="toolbar">
+        <button class="btn btn-acc2" id="addEq">Aggiungi Oggetto</button>
+      </div>
+      <table id="tabEq">
+        <thead><tr><th style="width:50%">Oggetto</th><th>Peso</th><th>Ingombro</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="kpi" id="sumEq"></div>
+
+      <h3 style="margin-top:10px">🪙 Borsellino</h3>
+      <div class="kpi" id="borsa"></div>
+
+      <h3 style="margin-top:10px">⚔️ Armi & Difesa</h3>
+      <div id="armi"></div>
+    </section>
+
+    <!-- Colonna destra -->
+    <section class="card">
+      <h3>❤️ Stato</h3>
+      <div id="stati"></div>
+      <div class="kpi" id="statiKpi"></div>
+
+      <h3 style="margin-top:10px">🧠 Abilità</h3>
+      <div class="toolbar">
+        <button class="btn btn-acc" id="addAb">Aggiungi Abilità</button>
+      </div>
+      <table id="tabAb">
+        <thead><tr><th>Abilità</th><th>Livello</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="bottom-grid">
+    <section class="card">
+      <h3>📜 Background</h3>
+      <textarea id="background" placeholder="Storia del personaggio..."></textarea>
+    </section>
+    <section class="card">
+      <h3>🗒️ Note</h3>
+      <textarea id="note" placeholder="Appunti di gioco..."></textarea>
+    </section>
+  </div>
+</main>
+
+<dialog id="dlg" class="modal">
+  <header class="wrap"><h3 style="margin:8px 0">Anteprima JSON</h3></header>
+  <div class="content wrap"><code id="jsonOut"></code></div>
+  <div class="wrap" style="display:flex;gap:8px;justify-content:flex-end;padding:12px"><button class="btn" onclick="dlg.close()">Chiudi</button></div>
+</dialog>
+
+<dialog id="listDlg" class="modal">
+  <header class="wrap"><h3 style="margin:8px 0">Profili salvati nel browser</h3></header>
+  <div class="content wrap" id="savedList"></div>
+  <div class="wrap" style="display:flex;gap:8px;justify-content:flex-end;padding:12px"><button class="btn" onclick="listDlg.close()">Chiudi</button></div>
+</dialog>
+
+<!-- Dialogo elenco oggetti -->
+<dialog id="oggettiDlg" class="modal">
+  <header class="wrap"><h3 style="margin:8px 0">Elenco Oggetti</h3></header>
+  <div class="content wrap" style="max-height:60vh;overflow:auto">
+    <input id="oggettiSearch" placeholder="Cerca oggetto..." />
+    <table id="oggettiTab" style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr><th>Oggetto</th><th>Ingombro</th><th>Peso</th><th>Costo</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="wrap" style="display:flex;gap:8px;justify-content:flex-end;padding:12px">
+    <button class="btn btn-cyan" id="btnAddSelected">Aggiungi Oggetto Selezionato</button>
+    <button class="btn" onclick="oggettiDlg.close()">Chiudi</button>
+  </div>
+</dialog>
+<!-- Dialogo popup abilità -->
+<dialog id="abilitaDlg" class="modal">
+  <header class="wrap"><h3 style="margin:8px 0">Dettaglio Abilità</h3></header>
+  <div class="content wrap" id="abilitaDesc" style="white-space:pre-line;min-height:100px"></div>
+  <div class="wrap" style="display:flex;gap:8px;justify-content:flex-end;padding:12px">
+    <button class="btn" onclick="abilitaDlg.close()">Chiudi</button>
+  </div>
+</dialog>
+
+<!-- Collegamento al file con le abilità -->
+<script src="abilita.js"></script>
+<script>
+
+/* ---------- MODEL ---------- */
+const caratteristiche=['possenza','resistenza','atletica','manualita','percezione','sapienza','carisma'];
+const livelli=['Neofita','Pratico','Esperto','Veterano','Maestro'];
+const armi=['','Falcetto 2D10','Accetta 4D10','Pugnale 3D10','Sica 4D10','Daga 4D10','Spada Corta 6D10','Ascia 5D10','Sciabola 5D10','Spada 5D10','Spadone 6D10','Falchion 5D10','Ascia Bipenne 6D10','Randello 3D10','Mazza Chiodata 6D10','Mazzafrusto 5D10','Clava 4D10','Martello da Guerra 6D10','Lancia 5D10','Alabarda 6D10','Bardica 6D10','Balestra piccola a 1 mano 4D10','Balestra Grande 5D10','Arco piccolo 4D10','Arco Lungo Composito 5D10','Balestra multidardo a 2 mani 4D10','Frusta 4D10'];
+const difese=['0','+1','+2','+3'];
+const risultatiTiro=['1 – Non è morto, ma ha subito un grave shock: respira lentamente e ha solo bisogno di cure mediche.','2 – Gravi ferite interne e svenuto. 5 ore per ricevere cure, poi muore.','3 – In coma con fratture multiple. 2 ore per soccorso, poi muore.','4 – Lesioni a organi vitali: 30 minuti per essere curato. Perdita di 2 livelli fisici per 1 mese.','5 – Shock profondo: 10-15 minuti per essere curato. Cambia un tratto della personalità.','6–12 – Il personaggio è morto.'];
+
+/*  NOTE: rimossa "Armatura" (bonus) dal pannello Armi & Difesa.
+    Aggiunto contatore FRECCE con salvataggio in JSON. */
+const state={
+  info:{nome:'',livello:'',pe:'',razza:'',classe:'',eta:'',fortuna:''},
+  car:Object.fromEntries(caratteristiche.map(k=>[k,''])),
+  stato:{indice_ferite:1,danni_ferite:0,indice_stanchezza:1,danni_stanchezza:0,indice_paura:1,danni_paura:0,risultato_tiro:''},
+  abilita:[],
+  equip:[],
+  borsa:{MO:0,MA:0,MR:0},
+  armi:{arma1:'',arma2:''},
+  difesa:{scudo:'0', tipoArmatura:''},   // <- rimosso armatura duplicata, lasciato scudo + tipoArmatura
+  frecce:{totale:0},                      // <- NUOVO: contatore frecce salvabile
+  background:'',
+  note:''
+};
+
+/* ---------- STORAGE ---------- */
+const LS_PREFIX='gdr_pg_'; const LS_INDEX='gdr_pg_index';
+const getIndex=()=>JSON.parse(localStorage.getItem(LS_INDEX)||'[]');
+const setIndex=arr=>localStorage.setItem(LS_INDEX,JSON.stringify([...new Set(arr)]));
+
+/* ---------- UI UTILS ---------- */
+function el(tag,attrs={},children=[]){
+  const e=document.createElement(tag);
+  for(const[k,v]of Object.entries(attrs)){
+    if(k==='class') e.className=v;
+    else if(k==='html') e.innerHTML=v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2),v);
+    else e.setAttribute(k,v);
+  }
+  children.forEach(c=>e.appendChild(typeof c==='string'?document.createTextNode(c):c));
+  return e;
+}
+
+/* ---------- SEZIONE INFO ---------- */
+function buildInfo(){
+  const c=document.getElementById('info');
+  c.innerHTML='';
+
+  const campi = [
+    ['Nome','nome'],
+    ['Livello','livello'],
+    ['PE','pe'],
+    ['Razza','razza'],
+    ['Classe','classe'],
+    ['Età','eta'],
+    ['Fortuna','fortuna']
+  ];
+
+  campi.forEach(([label,key])=>{
+   if (key === 'classe') {
+  const sel = el('select', {
+    id: key,
+    onchange: e => {
+      state.info[key] = e.target.value;
+      aggiornaAbilitaPerClasse();
+    }
+  });
+
+  // opzione vuota
+  sel.append(el('option', { value: '', selected: !state.info[key] }, ['']));
+
+  // classi disponibili
+  if (typeof ABILITA_CLASSI !== 'undefined') {
+    Object.keys(ABILITA_CLASSI).forEach(cls => {
+      const opt = el('option', { value: cls }, [cls]);
+      if (cls === state.info[key]) opt.selected = true;
+      sel.append(opt);
+    });
+  }
+
+  // se la classe è stata caricata ma il select non la mostra, forza la selezione
+  if (state.info[key]) sel.value = state.info[key];
+
+  c.append(el('div', { class: 'row' }, [
+    el('label', { for: key }, [label]),
+    sel
+  ]));
+}
+ else {
+      c.append(el('div',{class:'row'},[
+        el('label',{for:key},[label]),
+        el('input',{id:key,value:state.info[key]||'',oninput:e=>state.info[key]=e.target.value})
+      ]));
+    }
+  });
+}
+
+
+/* ---------- CARATTERISTICHE & BONUS ---------- */
+function buildCaratt(){
+  const c=document.getElementById('caratt'); c.innerHTML='';
+  caratteristiche.forEach(k=>c.append(el('div',{class:'row'},[
+    el('label',{for:k},[k.charAt(0).toUpperCase()+k.slice(1)]),
+    el('input',{id:k,type:'number',value:state.car[k],oninput:e=>{state.car[k]=e.target.value;renderBonus();}})
+  ])));
+}
+function calcolaBonus(v){
+  v=parseInt(v);
+  if(isNaN(v))return 0; if(v<5)v=5; if(v>15)v=15;
+  const m={5:0,6:-1,7:-1,8:-2,9:-2,10:-3,11:-4,12:-5,13:-6,14:-7,15:-8};
+  return m[v]??0;
+}
+function renderBonus(){
+  const box=document.getElementById('bonusKpi'); box.innerHTML='';
+  caratteristiche.forEach(k=>box.append(el('div',{class:'chip'},[`${k}: Bonus ${calcolaBonus(state.car[k])}`])))
+}
+
+/* ---------- STATO ---------- */
+function calcolaStato(indice,danni,tipi){
+  const maxs=[...Array(tipi.length-1).keys()].map(i=>indice*(i+1));
+  for(let i=0;i<maxs.length;i++){ if(danni<=maxs[i])return tipi[i]; }
+  return tipi[tipi.length-1];
+}
+function buildStati(){
+  const wrap=document.getElementById('stati'); wrap.innerHTML='';
+  const cfg=[
+    {label:'Ferite',v1:'indice_ferite',v2:'danni_ferite',tipi:['Lieve','Media','Lacerante','Profonda','Critica','Grave','Morte']},
+    {label:'Affaticamento',v1:'indice_stanchezza',v2:'danni_stanchezza',tipi:['Riposato','Fresco','Affaticato','Stanco','Stremato']},
+    {label:'Paura',v1:'indice_paura',v2:'danni_paura',tipi:['Quieto','Teso','Intimorito','Spaventato','Panico']}
+  ];
+  cfg.forEach(c=>{
+    wrap.append(el('div',{class:'row'},[
+      el('label',{},[c.label+' indice']),
+      el('input',{type:'number',value:state.stato[c.v1],oninput:e=>{state.stato[c.v1]=parseInt(e.target.value)||1;renderStatiKpi();}})
+    ]));
+    wrap.append(el('div',{class:'row'},[
+      el('label',{},[c.label+' danni']),
+      el('input',{type:'number',value:state.stato[c.v2],oninput:e=>{state.stato[c.v2]=parseInt(e.target.value)||0;renderStatiKpi();}})
+    ]));
+    if(c.label==='Ferite'){
+      const sel=el('select',{onchange:e=>state.stato.risultato_tiro=e.target.value},
+        risultatiTiro.map(t=>el('option',{value:t,selected:t===state.stato.risultato_tiro},[t]))
+      );
+      wrap.append(el('div',{class:'row'},[el('label',{},['Risultato tiro 1D12']),sel]));
+    }
+  });
+}
+function renderStatiKpi(){
+  const box=document.getElementById('statiKpi'); box.innerHTML='';
+  const cfg=[
+    {key:['indice_ferite','danni_ferite'],tipi:['Lieve','Media','Lacerante','Profonda','Critica','Grave','Morte'],label:'Ferite'},
+    {key:['indice_stanchezza','danni_stanchezza'],tipi:['Riposato','Fresco','Affaticato','Stanco','Stremato'],label:'Affaticamento'},
+    {key:['indice_paura','danni_paura'],tipi:['Quieto','Teso','Intimorito','Spaventato','Panico'],label:'Paura'}
+  ];
+  cfg.forEach(c=>box.append(el('div',{class:'chip'},[
+    `${c.label}: ${calcolaStato(state.stato[c.key[0]],state.stato[c.key[1]],c.tipi)}`
+  ])));
+}
+
+/* ---------- ABILITÀ ---------- */
+/* ---------- ABILITÀ ---------- */
+function buildAbilita(){
+  // 🔹 Salva le selezioni attuali (prima di ricostruire la tabella)
+  const tbOld = document.querySelector('#tabAb tbody');
+  if (tbOld) {
+    Array.from(tbOld.querySelectorAll('tr')).forEach((tr, i) => {
+      const selects = tr.querySelectorAll('select');
+      const nomeSel = selects[0]; // selettore nome abilità
+      const livSel  = selects[1]; // selettore livello
+      if (!state.abilita[i]) state.abilita[i] = { nome:'', livello:'Neofita' };
+      if (nomeSel) state.abilita[i].nome = nomeSel.value;
+      if (livSel)  state.abilita[i].livello = livSel.value || 'Neofita';
+    });
+  }
+
+  // 🔹 Ricostruisce la tabella senza perdere dati
+  const tb = document.querySelector('#tabAb tbody');
+  tb.innerHTML = '';
+  state.abilita.forEach((a,i)=>tb.append(renderAbRow(a,i)));
+}
+
+
+function renderAbRow(a, i){
+  const tr = el('tr');
+  const classe = state.info.classe;
+  const abilitaDisponibili = (classe && ABILITA_CLASSI[classe]) ? ABILITA_CLASSI[classe] : [];
+
+  // Selettore nome abilità
+  const selNome = el('select', {}, [
+    el('option', { value: '' }, ['']),
+    ...abilitaDisponibili.map(nome =>
+      el('option', { value: nome }, [nome])
+    )
+  ]);
+  selNome.value = a.nome || '';
+  selNome.addEventListener('change', e => a.nome = e.target.value);
+  const td1 = el('td', {}, [selNome]);
+
+  // Selettore livello
+  const livelli = ["Neofita","Pratico","Esperto","Veterano","Maestro"];
+  const selLiv = el('select', {}, livelli.map(l =>
+    el('option', { value: l }, [l])
+  ));
+  selLiv.value = a.livello || 'Neofita';
+  selLiv.addEventListener('change', e => a.livello = e.target.value);
+  const td2 = el('td', {}, [selLiv]);
+
+  // Pulsanti Info e Rimuovi
+  const btnInfo = el('button', {
+    class: 'btn btn-cyan',
+    onclick: () => mostraDettaglioAbilita(a.nome)
+  }, ['📜 Info']);
+
+  const btnDel = el('button', {
+    class: 'btn btn-danger',
+    onclick: () => {
+      state.abilita.splice(i, 1);
+      buildAbilita();
+    }
+  }, ['🗑️']);
+
+  const td3 = el('td', {}, [btnInfo, btnDel]);
+  tr.append(td1, td2, td3);
+  return tr;
+}
+
+
+
+function mostraDettaglioAbilita(nome){
+  const classe = state.info.classe;
+  if(!classe || !nome){
+    alert("Seleziona una classe e un’abilità per visualizzare i dettagli.");
+    return;
+  }
+
+  const livelli = ["Neofita","Pratico","Esperto","Veterano","Maestro"];
+  const datiAb = DESCRIZIONI_ABILITA[classe]?.[nome];
+
+  if (!datiAb) {
+    document.getElementById("abilitaDesc").textContent =
+      `${classe} – ${nome}\n\nDescrizione non disponibile.`;
+  } else {
+    let testo = `${classe} – ${nome}\n\n`;
+    for (const livello of livelli) {
+      if (datiAb[livello]) {
+        testo += `🜂 ${livello}\n${datiAb[livello]}\n\n`;
+      }
+    }
+    document.getElementById("abilitaDesc").textContent = testo.trim();
+  }
+
+  abilitaDlg.showModal();
+}
+
+
+
+/* ---------- EQUIP ---------- */
+function buildEquip(){
+  window.eqTargetRow = null;
+  const tb=document.querySelector('#tabEq tbody'); tb.innerHTML='';
+  state.equip.forEach((e,i)=>tb.append(renderEqRow(e,i)));
+  renderSommaEq();
+}
+function renderEqRow(o,i){
+  const tr=el('tr');
+  const nomeInput = el('input',{value:o.oggetto||'',oninput:e=>o.oggetto=e.target.value});
+  const searchBtn = el('button',{
+    class:'btn btn-cyan',
+    style:'margin-left:4px;font-size:11px;padding:4px 6px',
+    onclick:()=>{ window.eqTargetRow=tr; window.eqTargetIndex=i; buildOggettiTab(); oggettiDlg.showModal(); }
+  },['🔍']);
+  const tdNome = el('td',{},[nomeInput, searchBtn]);
+  const tdPeso = el('td',{},[el('input',{type:'number',step:'0.01',class:'pesoInput',value:o.peso??'',oninput:e=>{o.peso=e.target.value;renderSommaEq();}})]);
+  const tdIng = el('td',{},[el('input',{type:'number',step:'0.01',class:'ingInput',value:o.ingombro??'',oninput:e=>{o.ingombro=e.target.value;renderSommaEq();}})]);
+  const tdRm = el('td',{},[el('button',{class:'btn btn-danger',onclick:()=>{state.equip.splice(i,1);buildEquip();}},['Rimuovi'])]);
+  tr.append(tdNome,tdPeso,tdIng,tdRm);
+  return tr;
+}
+function renderSommaEq(){
+  const p=state.equip.reduce((s,e)=>s+(parseFloat((e.peso+'').replace(',','.'))||0),0);
+  const g=state.equip.reduce((s,e)=>s+(parseFloat((e.ingombro+'').replace(',','.'))||0),0);
+  const box=document.getElementById('sumEq'); box.innerHTML='';
+  box.append(
+    el('div',{class:'chip'},[`Somma Peso: ${+p.toFixed(2)}`]),
+    el('div',{class:'chip'},[`Somma Ingombro: ${+g.toFixed(2)}`])
+  );
+}
+
+/* ---------- BORSA (con Paga) ---------- */
+function buildBorsa(){
+  const box=document.getElementById('borsa'); box.innerHTML='';
+  ['MO','MA','MR'].forEach(k=>{
+    const spin=el('input',{ type:'number',min:'0',value:state.borsa[k], oninput:e=>state.borsa[k]=parseInt(e.target.value)||0 });
+    box.append(el('div',{class:'chip'},[k+': ',spin]));
+  });
+  const inputImporto = el('input',{type:'number',min:'0',placeholder:'Importo',style:'width:100px;background:#120a04;color:var(--text);border-radius:10px;border:1px solid #8f6b3e;padding:6px'});
+  const selectValuta = el('select',{style:'background:#120a04;color:var(--text);border-radius:10px;border:1px solid #8f6b3e;padding:6px'},[
+    el('option',{value:'MO'},['MO']),
+    el('option',{value:'MA',selected:true},['MA']),
+    el('option',{value:'MR'},['MR'])
+  ]);
+  const btnPaga = el('button',{class:'btn btn-danger',style:'margin-left:6px',onclick:()=>pagaImporto(inputImporto.value, selectValuta.value)},['Paga']);
+  box.append(el('div',{style:'margin-top:10px;display:flex;align-items:center;gap:6px'},[inputImporto, selectValuta, btnPaga]));
+}
+function pagaImporto(valore, tipo){
+  const n = parseInt(valore);
+  if(isNaN(n) || n<=0){alert('Inserisci un importo valido');return;}
+  let costoMR = n * (tipo==='MO' ? 10000 : tipo==='MA' ? 100 : 1);
+  const totaleMR = state.borsa.MO*10000 + state.borsa.MA*100 + state.borsa.MR;
+  if(totaleMR < costoMR){ alert('Fondi insufficienti!'); return; }
+  let residuo = totaleMR - costoMR;
+  const MO = Math.floor(residuo / 10000); residuo %= 10000;
+  const MA = Math.floor(residuo / 100);
+  const MR = residuo % 100;
+  state.borsa = { MO, MA, MR };
+  buildBorsa();
+}
+
+/* ====== TABELLA ARMATURE (solo info per "Tipo Armatura") ====== */
+const armatureInfo={
+  'Imbottita':{prot:'+1',atl:'–',mag:'–'},
+  'Cuoio':{prot:'+1',atl:'–',mag:'–'},
+  'Cuoio Borchiato':{prot:'+1 *',atl:'–',mag:'–'},
+  'Giaco di Maglia':{prot:'+1 (i 10 ottenuti contano come danno singolo)**',atl:'–',mag:'+1D6'},
+  'Corazza a Scaglie':{prot:'+2 *',atl:'Svantaggio',mag:'+1D6'},
+  'Corazza a Piastre':{prot:'+2',atl:'+1D6',mag:'+1D6'},
+  'Corazza ad Anelli':{prot:'+2 (i 10 ottenuti contano come danno singolo)**',atl:'+1D6 (Svantaggio)',mag:'+1D6 (Svantaggio)'},
+  'Corazza a Strisce':{prot:'+3',atl:'+1D6 (Svantaggio)',mag:'+1D6 (Svantaggio)'},
+  'Armatura Completa':{prot:'+3 (i 10 ottenuti contano come danno singolo)**',atl:'+1D6 (Svantaggio)',mag:'+1D6 (Svantaggio)'}
+};
+
+/* ---------- ARMI & DIFESA + FRECCE ---------- */
+function buildArmi(){
+  const box=document.getElementById('armi'); box.innerHTML='';
+
+  // Armi a scelta
+  [['Arma 1','arma1',armi],['Arma 2','arma2',armi]].forEach(([label,key,opts])=>{
+    const val=state.armi[key]||'';
+    const sel=el('select',{},opts.map(o=>el('option',{value:o,selected:o===val},[o])));
+    const selTxt=el('div',{style:'margin-top:4px;font-size:13px;color:#ffd580;opacity:.9'},[val?`Selezionato: ${val}`:'Nessuna selezione']);
+    sel.addEventListener('change',e=>{
+      const v=e.target.value; state.armi[key]=v;
+      selTxt.textContent=v?`Selezionato: ${v}`:'Nessuna selezione';
+    });
+    box.append(el('div',{class:'row'},[el('label',{},[label]),sel]));
+    box.append(selTxt);
+  });
+
+  // Scudo (resta)
+  {
+    const val=state.difesa.scudo||'0';
+    const sel=el('select',{},difese.map(o=>el('option',{value:o,selected:o===val},[o])));
+    const selTxt=el('div',{style:'margin-top:4px;font-size:13px;color:#ffd580;opacity:.9'},[val?`Selezionato: ${val}`:'Nessuna selezione']);
+    sel.addEventListener('change',e=>{ state.difesa.scudo=e.target.value; selTxt.textContent=`Selezionato: ${state.difesa.scudo||'0'}`; });
+    box.append(el('div',{class:'row'},[el('label',{},['Scudo']),sel]));
+    box.append(selTxt);
+  }
+
+  // Tipo Armatura (informativo)
+  {
+    if(!state.difesa.hasOwnProperty('tipoArmatura')) state.difesa.tipoArmatura='';
+    const tipi=Object.keys(armatureInfo);
+    const valTipo=state.difesa.tipoArmatura||'';
+    const selTipo=el('select',{},[el('option',{value:''},['']), ...tipi.map(n=>el('option',{value:n,selected:n===valTipo},[n]))]);
+    const selTipoTxt=el('div',{style:'margin-top:4px;font-size:13px;color:#ffd580;opacity:.9'},[valTipo?`Selezionato: ${valTipo}`:'Nessuna selezione']);
+    const extraInfo=el('div',{style:'font-size:12px;color:#9fdcff;margin-left:8px;margin-bottom:10px'},['']);
+    const updateExtra=(name)=>{ if(name && armatureInfo[name]){ const a=armatureInfo[name]; extraInfo.textContent=`Protezione: ${a.prot} | Atletica: ${a.atl} | Magia: ${a.mag}`; } else extraInfo.textContent=''; };
+    updateExtra(valTipo);
+    selTipo.addEventListener('change',e=>{ const v=e.target.value; state.difesa.tipoArmatura=v; selTipoTxt.textContent=v?`Selezionato: ${v}`:'Nessuna selezione'; updateExtra(v); });
+    box.append(el('div',{class:'row'},[el('label',{},['Tipo Armatura']),selTipo]));
+    box.append(selTipoTxt,extraInfo);
+  }
+
+  // ===================== FRECCE (NUOVO) =====================
+  buildFrecce(box);
+}
+
+function buildFrecce(container){
+  // Wrapper riga
+  const row=el('div',{class:'row'});
+  row.append(el('label',{},['Frecce']));
+
+  // Controlli
+  const wrap=el('div',{},[]);
+
+  // Totale frecce (spinner) dentro chip
+  const spinTot = el('input',{
+    type:'number', min:'0',
+    value: (state.frecce?.totale ?? 0),
+    oninput:e=>{
+      const v=parseInt(e.target.value)||0;
+      state.frecce.totale=v;
+      lblDisp.textContent=`Disponibili: ${v}`;
+      // bottone spara abilitato/disabilitato
+      btnSpara.disabled = (v<=0 || (parseInt(qty.value)||0)<=0 || (parseInt(qty.value)||0)>v);
+    }
+  });
+  const chipTot = el('div',{class:'chip',style:'display:flex;align-items:center;gap:8px'},['Totale: ',spinTot]);
+
+  // Quantità da sparare
+  const qty = el('input',{type:'number',min:'1',value:'1',
+    oninput:()=>{ const n=parseInt(qty.value)||0; btnSpara.textContent=`Spara (${n||0})`; btnSpara.disabled=(n<=0 || n>(state.frecce?.totale||0)); }
+  });
+  const chipQty = el('div',{class:'chip',style:'display:flex;align-items:center;gap:8px'},['Tiro: ',qty]);
+
+  // Disponibili (KPI)
+  const lblDisp = el('div',{class:'chip'},[`Disponibili: ${state.frecce?.totale||0}`]);
+
+  // Pulsante Spara
+  const btnSpara = el('button',{
+    class:'btn btn-danger',
+    onclick:()=>{
+      const n = parseInt(qty.value)||0;
+      if(n<=0){ alert('Quantità non valida'); return; }
+      if((state.frecce?.totale||0) < n){ alert('Frecce insufficienti'); return; }
+      state.frecce.totale -= n;
+      spinTot.value = state.frecce.totale;
+      lblDisp.textContent = `Disponibili: ${state.frecce.totale}`;
+      btnSpara.disabled = (state.frecce.totale<=0 || n<=0 || n>state.frecce.totale);
+    }
+  },[`Spara (1)`]);
+
+  // Abilita/disabilita all'inizio
+  btnSpara.disabled = ((state.frecce?.totale||0)<=0);
+
+  // Ricarica veloce (+5)
+  const btnPlus5 = el('button',{class:'btn btn-acc2',onclick:()=>{ state.frecce.totale=(state.frecce?.totale||0)+5; spinTot.value=state.frecce.totale; lblDisp.textContent=`Disponibili: ${state.frecce.totale}`; btnSpara.disabled=((parseInt(qty.value)||0)<=0 || (parseInt(qty.value)||0)>state.frecce.totale); }},['+5']);
+  const btnMinus5 = el('button',{class:'btn',onclick:()=>{ state.frecce.totale=Math.max(0,(state.frecce?.totale||0)-5); spinTot.value=state.frecce.totale; lblDisp.textContent=`Disponibili: ${state.frecce.totale}`; btnSpara.disabled=((parseInt(qty.value)||0)<=0 || (parseInt(qty.value)||0)>state.frecce.totale); }},['–5']);
+
+  // Riga comandi
+  const cmd = el('div',{style:'display:flex;gap:8px;align-items:center;margin-top:6px'},[btnSpara, btnPlus5, btnMinus5]);
+
+  // Monta
+  wrap.append(chipTot, chipQty, lblDisp, cmd);
+  row.append(wrap);
+  container.append(row);
+}
+
+/* ---------- OGGETTI: tabella completa + ricerca + riempimento riga ---------- */
+const tabellaOggetti = [
+  ["Falcetto","1","0.6 kg","2 monete di rame"],
+  ["Pugnale","1 (0 nel fodero)","0.7 kg","2 monete d’argento"],
+  ["Spada Corta","1","1.2 kg","5 monete d’argento"],
+  ["Accetta","1","2.5 kg","2 monete d’argento"],
+  ["Spada Lunga","2","2 kg","20 monete d’argento"],
+  ["Sciabola","2","1.5 kg","25 monete d’argento"],
+  ["Ascia","2","2.5-3 kg","26 monete d’argento"],
+  ["Randello","2","2.5 kg","5 monete di rame"],
+  ["Mazza Ferrata","2","2.5-3 kg","15 monete d’argento"],
+  ["Mazzafrusto","2","3 ai 5kg","30 monete d’argento"],
+  ["Frusta","2","0.8 kg","2 monete d’argento"],
+  ["Piccone","2.5","3 kg","5 monete di rame"],
+  ["Martello da Guerra","4","3 kg","40 monete d’argento"],
+  ["Spadone","4","5 kg","35 monete d’argento"],
+  ["Alabarda","5","3.4 kg","30 monete d’argento"],
+  ["Bardica","5","3.5 kg","30 monete d’argento"],
+  ["Ascia Bipenne","3","4 kg","35 monete d’argento"],
+  ["Lancia","5","2.7 kg","8 monete d'argento"],
+  ["Arco Lungo","3","2.5 kg","10 monete d'argento"],
+  ["Arco Corto","2","1.3 kg","15 monete d'argento"],
+  ["Balestra piccola","1","2 kg","25 monete d’argento"],
+  ["Balestra (singola o multidardo)","2","3.5 kg","50 monete d’argento"],
+  ["Scudo Legno Tondo","2","2.8 kg","35 monete di rame"],
+  ["Scudo Legno Tondo rinforzato in cuoio","2","3 kg","55 monete di rame"],
+  ["Scudo Tondo Metallico","2","4 kg","20 monete d’argento"],
+  ["Scudo Ovale Metallico","3","4.5 kg","20 monete d’argento"],
+  ["Scudo Triangolare Metallico","2","3.5 kg","25 monete d’argento"],
+  ["Scudo Grande in Legno Tondo","3","3.5 kg","5 monete d’argento"],
+  ["Scudo Grande in Legno Tondo rinfoz.","3","4 kg","10 monete d’argento"],
+  ["Scudo Torre ferro","5","8 kg","50 monete d’argento"],
+  ["Corazza di Cuoio -Leggera","4 (0 indossata)","4 kg","12 monete d’argento"],
+  ["Corazza Cuoio Borchiato","4 (0 indossata)","5 kg","26 monete d’argento"],
+  ["Giaco di Maglia","3 (0 indossato)","7 kg","55 monete d’argento"],
+  ["Corazza a Scaglie mobili","6 (0 indossata)","8.5 kg","75 monete d’argento"],
+  ["Corazza a Piastre","6 (0 indossato)","14 kg","60 monete d’argento"],
+  ["Cotta di Maglia Elfica","3 (0 indossata)","2 kg","/"],
+  ["Corazza a strisce","6 (0 indossata)","7.5 kg","1 moneta d’oro"],
+  ["Armatura completa","10 (0 indossata)","25 kg","3 monete d’oro"],
+  ["Zaino vuoto","-7","0, 5 kg vuoto","15 monete di rame"],
+  ["Acciarino","0","0.2kg","5 monete di rame"],
+  ["Borraccia","1","1 kg se piena, 0.2 kg vuota","5 monete di rame"],
+  ["Barilotto","8","5 kg vuoto 15 se pieno","12 monete di rame"],
+  ["Coperta","3","4 kg","15 monete di rame"],
+  ["Zaino in vimini","-9","0, 5 kg vuoto","10 monete di rame"],
+  ["Corda 45 metri","3","4,5 kg","3 monete rame"],
+  ["Libro","1","0.4 kg","/"],
+  ["Inchiostro/Fiala","0.5","0,2 kg","5 monete d'argento"],
+  ["Lanterna","1","1 kg","16 monete di bronzo"],
+  ["Pergamena","0","0.1 kg","12 monete di bronzo"],
+  ["Otre","0.5","2 kg, se piena, se no 0.5 kg","7 monete di rame"],
+  ["Fiasca","0.5","0.4 kg, 1 kg se piena","18 monete di rame"],
+  ["Faretra ( capacità 25 frecce)","2","2.5 kg","25 monete rame"],
+  ["Freccia Singola","0 se in faretra","0.2 kg","12 monete di rame"],
+  ["Ramponi","2","1.5kg","16 monete di rame"],
+  ["Sacco","1 vuoto","0.3 kg vuoto","6 monete di rame"],
+  ["Scalpello","0.5","0.4 kg","3 monete di rame"],
+  ["Fiala","0","0, 2 kg","18 monete di rame"],
+  ["Sella e Briglia","5 (0 sul cavallo)","6 kg","1 moneta d'oro"],
+  ["Spago","0","0 kg","2 monete di bronzo"],
+  ["Specchietto","1","0.3 kg","2 monete d'argento"],
+  ["Pipa","0.5","0, 1 kg","13 monete di rame"],
+  ["Tabacco","0","0 kg","5 monete di rame"],
+  ["Torcia","1","0.3 kg","3 monete di rame"],
+  ["Rampino","2","1.5 kg","5 monete rame"],
+  ["Provviste 2 giorni","1","1.5 kg","6 monete di rame"],
+  ["Provviste 1 settimana","2.5","3 kg","10 monete di rame"],
+  ["Boccetta d'olio","1","0,.2kg","1 moneta d'argento"],
+  ["Sega","1.5","1.5 kg","8 monete di rame"],
+  ["Martello","1.5","2 kg","8 monete di rame"],
+  ["Chiodi Grandi","0.5","0.2 kg","3 monete di rame"],
+  ["Manette","1","1 kg","5 monete d'argento"],
+  ["Vanga o Badile","3.5","3 kg","12 monete di rame"],
+  ["Secchio","4","0.5 kg vuoto o dai 3 ai 5 kg, dipende se legno o metallo","6 monete di rame"],
+  ["Clessidra","0.5","0.5kg","1 moneta d'oro"],
+  ["Sale per conservazione cibi","1","2,5 kg","1 moneta argento"],
+  ["Flauto","0.5","0.1 kg","2 monete d'argento"],
+  ["Arpa","5","5 kg","2 monete d'oro"],
+  ["Liuto","3","2 kg","5 monete d'argento"],
+  ["Tamburo","2","2,5 kg","18 monete di bronzo"],
+  ["Mandolino","3","1,5 kg","2 monete d'argento"],
+  ["Grimaldello","0","0.2 kg","5 monete di rame"],
+  ["Lira","2","1,5 kg","2 monete d'argento"],
+  ["Custodia Pergamene.","1","0,2 kg vuota","1 moneta d'argento"],
+  ["Arnesi da Scasso","3","6 kg","5 monete d'argento"],
+  ["Tenaglie","0.5","2 kg","13 monete di bronzo"],
+  ["Parrucche, trucchi minerali.","2.5","2 kg","2 monete d'argento"],
+  ["Corno da Guerra per richiamo","1","1 kg","1 moneta d'argento"],
+  ["Pentola","Da 2 a 4 a seconda del tipo di pentola","Dai 2 ai 6 kg a seconda del tipo di pentola","5 monete rame"],
+  ["Candelabro","2","0.8 kg","10 monete rame"],
+  ["Fazzoletto di Tela","0","0","1 moneta rame"],
+  ["Boccale di Legno","1","0,2 kg (vuoto)","2 monete rame"],
+  ["Utensili da pesca","3.5","3,5 kg","2 monete argento"],
+  ["Pettine di Legno","0.5","0,2 kg","3 monete rame"],
+  ["Sapone","0","0,2kg","6 monete rame"],
+  ["Astrolabio","1.5","0,2 kg","8 monete argento"],
+  ["Bussola","0","0,2 kg","12 monete argento"],
+  ["Mortaio e Pestello","1","0,5 kg","3 monete rame"],
+  ["Seghetto","0.5","0,2 kg","5 monete rame"],
+  ["Olio Lanterna","0","0, 3 kg","2 monete rame"],
+  ["Taccuino","0.5","0,2kg","3 monete argento"],
+  ["Righello","0.5","0,1 kg","2 monete argento"],
+  ["Compasso","0.5","0,1 kg","9 monete argento"],
+  ["Bastone passeggio","2","0,8 kg","5 monete rame"]
+];
+
+const oggettiDlg = document.getElementById('oggettiDlg');
+let ultimoSelezionato = null;
+
+/* helper numerico */
+const toNum = s => {
+  if (!s) return '';
+  const x = (s+'').replace(',', '.');
+  const m = x.match(/-?\d+(\.\d+)?/);
+  return m ? m[0] : '';
+};
+
+/* inserimento oggetto da tabella */
+// --- Inserisce un oggetto nella riga selezionata (o crea nuova) ---
+function inserisciOggettoInRiga(nome, ing, peso) {
+  // se nessuna riga è attiva, aggiungine una nuova
+  if (typeof window.eqTargetIndex !== "number" || window.eqTargetIndex < 0) {
+    state.equip.push({ oggetto: '', peso: '', ingombro: '' });
+    buildEquip();
+    window.eqTargetIndex = state.equip.length - 1;
+  }
+
+  const idx = window.eqTargetIndex;
+  const eq = state.equip[idx];
+  eq.oggetto = nome;
+  eq.peso = toNum(peso);
+  eq.ingombro = toNum(ing);
+
+  // aggiorna visivamente
+  const tbody = document.querySelector("#tabEq tbody");
+  const row = tbody.children[idx];
+  if (row) {
+    row.querySelector('td:first-child input[type=text]').value = nome;
+    row.querySelector('.pesoInput').value = toNum(peso);
+    row.querySelector('.ingInput').value = toNum(ing);
+    row.style.background = "rgba(125,227,255,.25)";
+    setTimeout(() => (row.style.background = ""), 500);
+  }
+
+  renderSommaEq();
+  oggettiDlg.close();
+
+  // reset selezione
+  window.eqTargetIndex = null;
+  window.eqTargetRow = null;
+}
+
+// --- Tabella popup oggetti ---
+function buildOggettiTab() {
+  const tbody = document.querySelector("#oggettiTab tbody");
+  const searchInput = document.getElementById("oggettiSearch");
+  const q = (searchInput.value || "").toLowerCase().trim();
+  tbody.innerHTML = "";
+
+  tabellaOggetti
+    .filter(([n]) => !q || n.toLowerCase().includes(q))
+    .forEach(([nome, ing, peso, costo]) => {
+      const tr = document.createElement("tr");
+      [nome, ing, peso, costo].forEach((text) => {
+        const td = document.createElement("td");
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+
+      // 👇 CLICCA → aggiunge subito l’oggetto nella scheda
+      tr.addEventListener("click", () => {
+        inserisciOggettoInRiga(nome, ing, peso);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+  searchInput.oninput = buildOggettiTab;
+}
+
+
+/* ---------- SAVE/LOAD ---------- */
+function collect(){return structuredClone(state);}
+function applyData(d) {
+  Object.assign(state.info, d.info || {});
+  Object.assign(state.car, d.car || {});
+  Object.assign(state.stato, d.stato || {});
+  state.abilita = (d.abilita || []).map(a => ({
+    nome: a.nome || '',
+    livello: livelli.includes(a.livello) ? a.livello : 'Neofita'
+  }));
+  state.equip = d.equip || [];
+  Object.assign(state.borsa, d.borsa || {});
+  Object.assign(state.armi, d.armi || {});
+  Object.assign(state.difesa, d.difesa || {});
+  state.frecce = Object.assign({ totale: 0 }, d.frecce || {});
+  state.background = d.background || '';
+  state.note = d.note || '';
+
+  document.getElementById('background').value = state.background;
+  document.getElementById('note').value = state.note;
+
+  // Costruisce tutto tranne l'info (che richiede la classe corretta)
+  buildCaratt();
+  renderBonus();
+  buildStati();
+  renderStatiKpi();
+  buildEquip();
+  buildBorsa();
+  buildArmi();
+
+  // Ora ricostruisci info e abilità basandoti sullo stato aggiornato
+  buildInfo();
+  buildAbilita();
+}
+
+
+function saveLocal(name,data){localStorage.setItem(LS_PREFIX+name,JSON.stringify(data));const idx=getIndex();if(!idx.includes(name)){idx.push(name);setIndex(idx);}}
+function doSave(){const n=document.getElementById('saveName').value.trim();if(!n){alert('Inserisci nome');return;}saveLocal(n,collect());alert('Salvato: '+n);}
+function loadLocal(name){const raw=localStorage.getItem(LS_PREFIX+name);if(!raw)return null;return JSON.parse(raw);}
+function doLoad(){const n=document.getElementById('saveName').value.trim();if(!n){alert('Nome mancante');return;}const d=loadLocal(n);if(!d){alert('Profilo non trovato');return;}applyData(d);alert('Caricato: '+n);}
+function listNames(){return getIndex().sort();}
+function showList(){
+  const arr=listNames();const box=document.getElementById('savedList');box.innerHTML='';
+  if(!arr.length){box.textContent='Nessun profilo.';listDlg.showModal();return;}
+  const ul=el('ul');
+  arr.forEach(n=>{
+    ul.append(el('li',{},[
+      n,' ',
+      el('button',{class:'btn btn-cyan',onclick:()=>{document.getElementById('saveName').value=n;doLoad();listDlg.close();}},['Carica']),' ',
+      el('button',{class:'btn btn-danger',onclick:()=>{if(confirm('Eliminare '+n+'?')){localStorage.removeItem(LS_PREFIX+n);setIndex(getIndex().filter(x=>x!==n));showList();}}},['Elimina'])
+    ]));
+  });
+  box.append(ul);listDlg.showModal();
+}
+function exportJSON(){
+  const d=collect();const n=(document.getElementById('saveName').value.trim()||'scheda')+'.json';
+  const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=n;a.click();URL.revokeObjectURL(url);
+}
+function importJSON(f){
+  const r=new FileReader();
+  r.onload=e=>{try{const o=JSON.parse(e.target.result);applyData(o);alert('Import riuscito');}catch{alert('JSON non valido');}};
+  r.readAsText(f);
+}
+
+/* ---------- INIT ---------- */
+
+function mount(){
+  buildInfo();
+  buildCaratt();
+  renderBonus();
+  buildStati();
+  renderStatiKpi();
+  buildAbilita();
+  buildEquip();
+  buildBorsa();
+  buildArmi();
+
+  // 🔹 Aggiungi Abilità — mantiene le precedenti
+  document.getElementById('addAb').onclick = () => {
+    // Salva prima le selezioni correnti
+    const tbOld = document.querySelector('#tabAb tbody');
+    if (tbOld) {
+      Array.from(tbOld.querySelectorAll('tr')).forEach((tr, i) => {
+        const nomeSel = tr.querySelector('select:nth-child(1)');
+        const livSel = tr.querySelector('select:nth-child(2)');
+        if (!state.abilita[i]) state.abilita[i] = { nome: '', livello: 'Neofita' };
+        if (nomeSel) state.abilita[i].nome = nomeSel.value;
+        if (livSel) state.abilita[i].livello = livSel.value;
+      });
+    }
+
+    // Aggiunge una nuova abilità vuota
+    state.abilita.push({ nome: '', livello: 'Neofita' });
+    buildAbilita();
+  };
+
+  // 🔹 Aggiungi Oggetto
+  document.getElementById('addEq').onclick = () => {
+    state.equip.push({ oggetto:'', peso:'', ingombro:'' });
+    buildEquip();
+  };
+
+  // 🔹 Pulsanti principali
+  document.getElementById('btnSave').onclick = doSave;
+  document.getElementById('btnLoad').onclick = doLoad;
+  document.getElementById('btnList').onclick = showList;
+  document.getElementById('btnPreview').onclick = () => {
+    document.getElementById('jsonOut').textContent = JSON.stringify(collect(), null, 2);
+    dlg.showModal();
+  };
+  document.getElementById('btnExport').onclick = exportJSON;
+
+  // 🔹 Import JSON
+  document.getElementById('fileImport').addEventListener('change', e => {
+    if (e.target.files[0]) importJSON(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  // 🔹 Ricerca oggetti live
+  const s = document.getElementById('oggettiSearch');
+  s.addEventListener('input', buildOggettiTab);
+
+  // 🔹 Pulsante "Aggiungi Oggetto Selezionato" nel popup
+  document.getElementById('btnAddSelected').onclick = () => {
+    if (!ultimoSelezionato) {
+      alert('Seleziona un oggetto dalla lista.');
+      return;
+    }
+    inserisciOggettoInRiga(ultimoSelezionato.nome, ultimoSelezionato.ing, ultimoSelezionato.peso);
+  };
+}
+
+window.addEventListener('DOMContentLoaded',mount);
+</script>
+</body>
+</html>
